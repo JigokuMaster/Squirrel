@@ -112,6 +112,7 @@ void CSquirrelDecoderView::HandleViewRectChange()
     if (iDecoderModel)
     {
 	iDecoderModel->SetupViewL(ClientRect());
+	iDecoderModel->RedrawCodeImageL();
     }   
 }
 

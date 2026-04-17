@@ -60,6 +60,7 @@ SYSTEMINCLUDE	 /epoc32/include/zbar
 
 MACRO STBI_NO_THREAD_LOCALS
 MACRO STBI_NO_SIMD
+MACRO NO_STB_LIBS
 MACRO ZBAR_NO_CPP_API
 OPTION GCCE -std=c99
 OPTION CW -lang c99 -enc UTF-8
@@ -92,6 +93,7 @@ LIBRARY            sendui.lib
 LIBRARY            pbkeng.lib pbkview.lib cntmodel.lib
 LIBRARY            etel3rdparty.lib esock.lib insock.lib
 LIBRARY 	   vcard.lib versit.lib
+LIBRARY 	   BrowserLauncher.lib
 LIBRARY            libc.lib libm.lib
 STATICLIBRARY 	   libzbar.lib
 

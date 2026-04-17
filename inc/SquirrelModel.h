@@ -58,6 +58,7 @@ class CQRCEncoderModel : public CActive
 public:
 	CQRCEncoderModel(TSize aSize);
 	~CQRCEncoderModel();
+	void RedrawQRCImageL(TSize aSize);
 	CFbsBitmap* Bitmap();
 	CFbsBitmap* FullBitmap();
 	void EncodeL(const TDesC8 &aText);
@@ -102,6 +103,7 @@ class CDecoderModel: public CActive, NOCRUtils::MImageHandlerCallback
 	EIdle = 0, 
 	ELoadingImage,
 	EImageLoaded,
+	ERedrawImage,
 	EDecodingImage,
 	EImageDecoded,
 	EExtractingCode,
@@ -114,7 +116,10 @@ public:
 	~CDecoderModel();
 
 	CViewContainer* SetupViewL(const TRect &aRect);
+	
 	CViewContainer* GetView();
+
+	void RedrawCodeImageL();
 
 	TBool DecodeBitmap(CFbsBitmap* aBitmap);
 
@@ -132,9 +137,10 @@ public:
 
 	void ShowDataMenuL(TBool aNewData=ETrue);
 	
+
 private:
 
-	void DrawCodeRect();
+	void DrawCodeImageL();
 
 	void DecodeFinishedL(const TDesC *aFileName=NULL);
 

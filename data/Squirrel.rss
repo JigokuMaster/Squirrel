@@ -563,8 +563,9 @@ RESOURCE DIALOG r_about_query_dialog
 			id = EAknMessageQueryHeaderId;
 			itemflags = EEikDlgItemNonFocusing;
 			control = AVKON_HEADING
-				{
-				};
+			{
+			    label = qtn_contributor_about_string;
+			};
     },
 		DLG_LINE
 			{
@@ -632,6 +633,25 @@ RESOURCE DIALOG r_generator_waitdialog
 	}
     };
 }
+
+
+RESOURCE DIALOG r_general_confirmation_query
+	{
+	flags = EGeneralQueryFlags;
+	buttons = R_AVKON_SOFTKEYS_YES_NO;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtQuery;
+			id = EGeneralQuery;
+			control = AVKON_CONFIRMATION_QUERY
+				{
+				layout = EConfirmationQueryLayout;
+				};
+			}
+		};
+	}
 
 
 // resources for dialogs message, title ... etc
@@ -712,6 +732,10 @@ RESOURCE TBUF r_data_menu_title2
     buf = qtn_datamenu_title2_string;
 }
 
+RESOURCE TBUF r_contributor1_info
+{
+    buf = qtn_contributor1_info_string;
+}
 
 // ---------------------------------------------------------------------------- 
 //

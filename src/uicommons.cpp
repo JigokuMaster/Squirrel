@@ -352,7 +352,7 @@ void CBitmapDrawer::SetBrushColorL(const TRgb &aColor, TBool aNoBorder)
     User::LeaveIfNull(iBitmap);
     User::LeaveIfNull(iGc);
     iGc->SetBrushColor(aColor);
-    //iGc->SetBrushStyle(CGraphicsContext::ESolidBrush);
+    iGc->SetBrushStyle(CGraphicsContext::ESolidBrush);
 }
 
 void CBitmapDrawer::ClearL(const TRgb &aColor)

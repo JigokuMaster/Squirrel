@@ -1,9 +1,19 @@
 
 #include "SquirrelEngine.h"
+
+#ifndef NO_STB_LIBS
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#ifndef STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 #endif
+
+#endif
+#endif // NO_STB_LIBS
+
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -11,15 +21,12 @@
 #include <wchar.h>
 #include <ctype.h> // isprint
 
-#ifndef STB_IMAGE_WRITE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-#endif
-
+#ifndef NO_STB_LIBS
 void SaveBMData(const char *fp, int w, int h, int bpp, void *data)
 {
     stbi_write_bmp(fp, w, h, bpp, data);
 }
+#endif
 
 static int HasNonPrintableChar(const char* data, int len)
 {
@@ -105,8 +112,9 @@ QRBARDecoder::~QRBARDecoder()
 
     if (m_cachedPayload) delete m_cachedPayload;
     m_cachedPayload = NULL;
-
+#ifndef NO_STB_LIBS
     ReleaseImgBuf();
+#endif
 }
 
 int QRBARDecoder::Init()
@@ -159,14 +167,6 @@ int QRBARDecoder::Init(int w, int h)
 }
 
 
-void QRBARDecoder::ReleaseImgBuf()
-{
-
-    if (m_imgbuf) stbi_image_free(m_imgbuf);
-    m_imgbuf = NULL;
-}
-
-
 int QRBARDecoder::DecodeImageData(void* data, size_t len)
 {
 
@@ -195,6 +195,13 @@ int QRBARDecoder::DecodeImageData(void* data, int w, int h)
     return DecodeImageData(data, w*h);
 }
 
+#ifndef NO_STB_LIBS
+
+void QRBARDecoder::ReleaseImgBuf()
+{
+    if (m_imgbuf) stbi_image_free(m_imgbuf);
+    m_imgbuf = NULL;
+}
 
 int QRBARDecoder::DecodeImageData(void* data, int w, int h, int bpp)
 {
@@ -217,7 +224,6 @@ int QRBARDecoder::DecodeImageData(void* data, int w, int h, int bpp)
     //SaveBMData("D:\\1bpp.bmp", w, h, 1, m_imgbuf);
     return DecodeImageData(m_imgbuf, w, h);
 }
-
 
 int QRBARDecoder::DecodeImage(const char* fp)
 {
@@ -259,7 +265,7 @@ int QRBARDecoder::DecodeImage(const wchar_t *fp)
     fclose(f);
     return DecodeImageData(m_imgbuf, w, h);
 }
-
+#endif // NO_STB_LIBS
 
 void QRBARDecoder::GetCodePosition(const zbar_symbol_t *symbol, DecoderResult* res)
 {
@@ -334,7 +340,8 @@ int QRBARDecoder::ExtractCode(void* data, int w, int h, DecoderResult* res)
 	res->payload = text;
 	if (res->has_qrcode)
 	{
-	    if ( (text_len != bin_len) || HasNonPrintableChar(bin, bin_len) )
+	    // TODO: check for valid UTF-8?
+	    if ( (text_len != bin_len) && HasNonPrintableChar(bin, bin_len) )
 	    {
 		res->payload_type = PL_BINARY;
 		res->payload = bin;

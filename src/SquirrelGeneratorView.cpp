@@ -128,36 +128,19 @@ void CSquirrelGeneratorView::SetupControlsL()
 void CSquirrelGeneratorView::LayoutControls()
 {
 
-/*
     TInt edge = 10;
     TRect r = ClientRect();  
     TInt rw = r.Width();
     TInt rh = r.Height();
 
     TInt editorMinHeight = rh*0.3;
-    TInt imgBaseSize = Min(rw-editorMinHeight, rh-editorMinHeight) - edge;
+    TInt imgBaseSize = (rh-editorMinHeight) - (edge*2);
     TRect rect1(TPoint(edge, 0), TSize(imgBaseSize, imgBaseSize));
     iImageView->SetRect(rect1);
 
     TInt editorWidth = rw-edge;  
     TInt editorHeight = rh-imgBaseSize;   
     TRect rect2(TPoint(edge, edge+imgBaseSize), TSize(editorWidth, editorHeight));
-    iTextEdit->SetRect(rect2);
-*/
-    TInt edge = 0;
-    TInt leftEdge = 10;
-    TRect r = ClientRect();  
-    TInt rw = r.Width();
-    TInt rh = r.Height();
-
-    TInt editorMinHeight = rh*0.3;
-    TInt imgBaseSize = (rh-editorMinHeight) - (edge*2);
-    TRect rect1(TPoint(leftEdge, 0), TSize(imgBaseSize, imgBaseSize));
-    iImageView->SetRect(rect1);
-
-    TInt editorWidth = rw-leftEdge;  
-    TInt editorHeight = rh-imgBaseSize;   
-    TRect rect2(TPoint(leftEdge, edge+imgBaseSize), TSize(editorWidth, editorHeight));
     iTextEdit->SetRect(rect2);
 
 }
@@ -392,6 +375,9 @@ void CSquirrelGeneratorView::HandleViewRectChange()
     if (iContainer){
 	iContainer->SetRect(ClientRect());
 	LayoutControls();
+	iEncoderModel->RedrawQRCImageL(iImageView->Size());
+	iContainer->UpdateControl(0, EFalse);
+
     }
     
 }

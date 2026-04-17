@@ -10,6 +10,7 @@ Description : Application view implementation
 // INCLUDE FILES
 #include <coemain.h>
 #include <aknmessagequerydialog.h>
+#include <AknQueryDialog.h>
 //#include <aknnotewrappers.h>
 //#include <stringloader.h>
 #include <f32file.h>
@@ -67,6 +68,7 @@ void CSquirrelAboutView::ConstructL()
 CSquirrelAboutView::CSquirrelAboutView()
 {
     iListbox = NULL;
+    iBrowserLauncher = NULL;
     iOSNoticeContent = NULL;
 
 }
@@ -84,7 +86,8 @@ CSquirrelAboutView::~CSquirrelAboutView()
 	AppUi()->RemoveFromStack( iListbox );
 	delete iListbox;
     } 
-
+    
+    if (iBrowserLauncher) delete iBrowserLauncher;
     if (iOSNoticeContent) delete iOSNoticeContent;
     iOSNoticeContent = NULL;
 	
@@ -121,7 +124,7 @@ void CSquirrelAboutView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
     iListbox = new (ELeave) TListBox<DOUBLE_STYLE>;
     iListbox->ConstructL(NULL, ClientRect(), R_ABOUTVIEW_LISTBOX);
     iListbox->SetObserver(this);
-
+    iListbox->Listbox()->ItemDrawer()->FormattedCellData()->EnableMarqueeL(ETrue);
     iListbox->SetMopParent(this);
     
     Cba()->MakeCommandVisible(EAknSoftkeyOptions, EFalse);
@@ -146,36 +149,84 @@ void CSquirrelAboutView::DoDeactivate()
 
 void CSquirrelAboutView::HandleListBoxEventL(CEikListBox* aListBox , TListBoxEvent aEventType)
 {
-    if (iListbox && (aEventType == EEventEnterKeyPressed || aEventType == EEventItemDoubleClicked))
+    if ((aEventType == EEventEnterKeyPressed) || (aEventType == EEventItemClicked))
     {
 
 	TInt itemIndex = iListbox->Listbox()->CurrentItemIndex();
-	if (itemIndex == 4) ShowOSNoticeL();
+	if (itemIndex == 3)
+	{
+	    
+	    HBufC* msg = iCoeEnv->AllocReadResourceLC(R_CONTRIBUTOR1_INFO);
+	    CAknMessageQueryDialog* dlg = new (ELeave) CAknMessageQueryDialog;
+	    TPtr msgPtr = msg->Des();
+	    TInt prefix = msgPtr.Find(_L("["));
+	    TInt suffix = msgPtr.Find(_L("]"));
+	    iLinkBuf.Zero();
+	    if (suffix != KErrNotFound && prefix != KErrNotFound)
+	    {
+		prefix++;
+		TInt len = msgPtr.Length() - prefix - 1;
+		iLinkBuf.Copy(msgPtr.Mid(prefix, len));
+		msgPtr.Delete(prefix-1, 1);
+		msgPtr.Delete(suffix-1, 1);
+		TCallBack cb(CSquirrelAboutView::OpenLink, this);
+		dlg->SetLink(cb);
+		dlg->SetLinkTextL(iLinkBuf);
+	    }
+
+	    dlg->SetMessageTextL(*msg);
+	    CleanupStack::PopAndDestroy(msg);
+	    dlg->ExecuteLD(R_ABOUT_QUERY_DIALOG);
+	
+	    //CAknQueryDialog* q = CAknQueryDialog::NewL();
+            /*if (q->ExecuteLD(R_GENERAL_CONFIRMATION_QUERY))
+	    {
+	    }*/
+
+	}
+	else if (itemIndex == 4) ShowOSNoticeL();
 
     }
+}
+
+void CSquirrelAboutView::OpenLinkL()
+{
+    if (!iBrowserLauncher)
+    {
+	iBrowserLauncher = CBrowserLauncher::NewL();
+    }
+    iBrowserLauncher->LaunchBrowserEmbeddedL(iLinkBuf);
+}
+
+
+TInt CSquirrelAboutView::OpenLink(TAny* aArg)
+{
+    TRAPD(err, STATIC_CAST(CSquirrelAboutView*,aArg)->OpenLinkL());
+    if (err != KErrNone) ShowErrorL(err);
+    return 1;
 }
 
 
 void CSquirrelAboutView::ShowOSNoticeL()
 {
 
+  
     if (!iOSNoticeContent)
     {
 	RFile file;
-	_LIT(KFileName, "opensource.txt");
 	TInt fileSize;
+	TFileName fp;
 
-	User::LeaveIfError(file.Open(iCoeEnv->FsSession(), KFileName, EFileRead));
-	//CleanupClosePushL(file);
+	GetPrivateFilePathL(iCoeEnv->FsSession(), fp, _L("opensource.txt"));	
+	User::LeaveIfError(file.Open(iCoeEnv->FsSession(), fp, EFileRead));
 	User::LeaveIfError(file.Size(fileSize));
 	
 	HBufC8* fileContentBuf = HBufC8::NewLC(fileSize);
 	TPtr8 fileContentBufPtr(fileContentBuf->Des());
         User::LeaveIfError(file.Read(fileContentBufPtr));
-	//CleanupStack::PopAndDestroy(1); // file
 	file.Close();
 
-	iOSNoticeContent = HBufC::NewL(fileSize*2);
+	iOSNoticeContent = HBufC::NewL(fileSize*3);
 	TPtr buf(iOSNoticeContent->Des());
 	TInt err = CnvUtfConverter::ConvertToUnicodeFromUtf8(buf, fileContentBufPtr);
 	CleanupStack::PopAndDestroy(fileContentBuf);
@@ -189,19 +240,19 @@ void CSquirrelAboutView::ShowOSNoticeL()
 
     CAknMessageQueryDialog* dlg = new (ELeave) CAknMessageQueryDialog;
 
-    dlg->PrepareLC(R_ABOUT_QUERY_DIALOG);
+    dlg->PrepareLC(R_AVKON_MESSAGE_QUERY_DIALOG);
    
     if (iOSNoticeContent && iOSNoticeContent->Length() > 0)
     {
+
 	dlg->SetMessageTextL(*iOSNoticeContent);
     }
     else
     {
 	dlg->SetMessageTextL(_L("empty."));
-    }  
+    }
+
+    dlg->ButtonGroupContainer().MakeCommandVisible(EAknSoftkeyCancel, EFalse);
     dlg->RunLD();
-
 }
-
-
 // End of File

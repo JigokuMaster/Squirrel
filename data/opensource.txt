@@ -90,4 +90,3 @@ Portions of the bit stream reader are copyright (C) The Xiph.Org Foundation
 The Reed-Solomon decoder is derived from an implementation (C) 1991-1995 Henry
  Minsky (hqm@ua.com, hqm@ai.mit.edu), and is licensed under the LGPL with
  permission.
-

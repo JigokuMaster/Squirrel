@@ -13,6 +13,7 @@
 // INCLUDES
 #include <aknview.h>
 #include <eiklbo.h>
+#include <browserlauncher.h>
 #include "uicommons.h"
 
 
@@ -70,6 +71,8 @@ public:
 
 	virtual void HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType);
 	
+	void OpenLinkL();
+
 private:
 	// Constructors
 	void ConstructL();
@@ -80,10 +83,14 @@ private:
 	 */
 	CSquirrelAboutView();
 
+	static TInt OpenLink(TAny* aArg);
+
 	void ShowOSNoticeL();
 
 private:
 	TListBox<DOUBLE_STYLE> *iListbox;
+	CBrowserLauncher* iBrowserLauncher;
+	TBuf<512> iLinkBuf;
 	HBufC* iOSNoticeContent;
 };
 

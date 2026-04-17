@@ -452,6 +452,17 @@ void CQRCEncoderModel::DrawQRCImageL(const TInt &aSize)
     iBitmapDrawer->Gc()->DrawBitmap(dst, iCachedBitmapDrawer->Bitmap());
 }
 
+void CQRCEncoderModel::RedrawQRCImageL(TSize aSize)
+{
+    if (iCachedBitmapDrawer)
+    {
+	iBitmapDrawer->ClearL();
+	iBitmapDrawer->ResizeL(aSize);
+	TRect dst(iBitmapDrawer->Size());
+	iBitmapDrawer->Gc()->DrawBitmap(dst, iCachedBitmapDrawer->Bitmap());
+    }
+}
+
 void CQRCEncoderModel::ShowInfoMessageL(TInt aResourceId, TInt aAlignment, TInt aXpos, TInt aYPos, TInt aShowTime)
 {
     if (!iInfoPopup)
@@ -562,7 +573,6 @@ CViewContainer* CDecoderModel::SetupViewL(const TRect &aRect)
     if (iViewContainer)
     {
 	iViewContainer->SetRect(aRect);
-	DrawCodeRect();
 	return iViewContainer;
     }
 
@@ -573,7 +583,7 @@ CViewContainer* CDecoderModel::SetupViewL(const TRect &aRect)
     iImageView->SetPictureOwnedExternally(ETrue);
     iImageView->SetContainerWindowL(*iViewContainer);
     iViewContainer->AddControlL(iImageView);
-    DrawCodeRect();
+    DrawCodeImageL();
     return iViewContainer;
 
 }
@@ -583,7 +593,7 @@ CViewContainer* CDecoderModel::GetView()
     return iViewContainer;
 }
 
-void CDecoderModel::DrawCodeRect()
+void CDecoderModel::DrawCodeImageL()
 {
     if (!iViewContainer) return;
 
@@ -645,6 +655,16 @@ void CDecoderModel::DrawCodeRect()
 
 }
 
+void CDecoderModel::RedrawCodeImageL()
+{
+   // scale to fit the container size
+    iState = ERedrawImage;
+    TRAPD(err, iImageHandler->ScaleL( iViewContainer->Size() ));
+    if (err != KErrNone)
+    {
+	ShowErrorL(err);
+    }
+}
 
 
 TBool CDecoderModel::DecodeBitmap(CFbsBitmap* aBitmap)
@@ -859,7 +879,7 @@ void CDecoderModel::SendPayloadL()
     BaflUtils::DeleteFile(rfs, fp); 
 }
 
-
+#if 0
 void CDecoderModel::ViewPayloadL(TDesC &aPayload)
 {
 
@@ -883,7 +903,7 @@ void CDecoderModel::ViewPayloadL(TDesC &aPayload)
 	    break;
     }
 }
-
+#endif
 
 TBool CDecoderModel::DataAvailable()
 {
@@ -1000,7 +1020,7 @@ void CDecoderModel::RunL()
 
     else if (iState == ECodeExtracted || iState == EError)
     {
-	DrawCodeRect();
+	DrawCodeImageL();
 	if (iWaitDialog) iWaitDialog->ProcessFinishedL();
     }
 
@@ -1021,9 +1041,13 @@ void CDecoderModel::ImageOperationCompleteL(TInt aError)
     }
     else
     {
-
 	iImageView->SetBitmap(iImageHandler->ScaledBitmap());
-	StepCompleted(EImageLoaded);
+	if (iState == ERedrawImage)
+	{
+	    DrawCodeImageL();
+	    iState = EIdle;
+	}
+	else StepCompleted(EImageLoaded);
     }
 }
 
