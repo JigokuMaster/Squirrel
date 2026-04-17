@@ -1,9 +1,9 @@
 Squirrel is a simple application for generating and decoding QR codes.
-The decoder is powered by the ZBar library which supports barcodes as well! 
+The decoder is powered by the Zbar library which supports bar codes as well! 
 
-# Supported platforms: 
+# Supported platforms
 
-* Symbian S60v3 , S60v5, S^3 
+* Symbian S60v3, S60v5, S^3 
 
 # Requirements 
 
@@ -13,22 +13,21 @@ P.I.P.S v1.7 for S60v3 and S60v5
 
 * download the binary from [releases page](https://github.com/JigokuMaster/squirrel/releases) 
 
-# Features 
+# Features
 
 * Generate QR code from text, contact, notes, WIFI IP
-* Generate QR code with custom version,  colors ...etc
-* Send/Save QR code image. 
-
-* Decode QR code or barcode from image file.
+* Generate QR code with specific version,  colors ...etc
+* Send/Save QR code image file. 
+* Decode QR code or bar code from image file.
 * Scan directly using camera.
 * View/Copy/Send payload.
 
-# Libraries: 
+# Libraries
 
 The following libraries were used to make this project. 
 many thanks to the developers of them!
 
-• zbar v0.23.93 (Bar Code Reader)
+• Zbar v0.23.93 (Bar Code Reader)
 
 https://github.com/mchehab/zbar
 
@@ -39,5 +38,4 @@ https://github.com/nayuki/QR-Code-generator
 • stb_image
 
 https://github.com/nothings/stb
-http://nothings.org/s
 
