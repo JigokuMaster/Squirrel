@@ -88,7 +88,11 @@ public:
         * @return Id for this view.
         */
         TUid Id() const;
-    
+
+
+        // From MEikMenuObserver
+        void DynInitMenuPaneL(TInt aResourceId,CEikMenuPane* aMenuPane);
+
         /**
         * From CAknView.
         * Handles commands
@@ -118,6 +122,9 @@ public:
         void DoDeactivate();
 
 	void HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType);
+
+	TInt SelectedLanguageItemL();
+
 private:
 	// Constructors
 	void ConstructL();
@@ -127,6 +134,8 @@ private:
 	 * C++ default constructor.
 	 */
 	CSquirrelAppView();
+
+	void ChangeLanguageL(TInt aCommand);
 
 private:
 	CMainViewGrid*	iGridListbox;

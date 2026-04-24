@@ -66,7 +66,6 @@ void CSquirrelDecoderView::ConstructL()
 //
 CSquirrelDecoderView::CSquirrelDecoderView()
 {
-
     iPrevViewId = NULL_VIEWID;
 }
 
@@ -94,10 +93,14 @@ void CSquirrelDecoderView::HandleCommandL( TInt aCommand )
 	    SelectDriveRootL(ETrue);
 	    break;
 
-	case ECmdOpenQRCDataMenu:
+	case ECmdOpenDataMenu:
 	    iDecoderModel->ShowDataMenuL(EFalse);
+
 	    break;
-	
+	case ECmdSendPayload:
+	    if (iDecoderModel->DataAvailable()) iDecoderModel->SendPayloadL();
+	    break;
+
 	case EAknSoftkeyBack:  
 	    ActivatePrevViewL(); 
 	    break;
@@ -186,7 +189,7 @@ void CSquirrelDecoderView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane *aMen
     if (!iDecoderModel || aResourceId != R_DECODERVIEW_MENU) return;
     
     TBool dimm = !iDecoderModel->DataAvailable();
-    aMenuPane->SetItemDimmed(ECmdOpenQRCDataMenu, dimm);
+    aMenuPane->SetItemDimmed(ECmdOpenDataMenu, dimm);
 }
 
 

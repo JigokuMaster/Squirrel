@@ -93,11 +93,12 @@ LIBRARY            sendui.lib
 LIBRARY            pbkeng.lib pbkview.lib cntmodel.lib
 LIBRARY            etel3rdparty.lib esock.lib insock.lib
 LIBRARY 	   vcard.lib versit.lib
+LIBRARY		   browserengine.lib
 //LIBRARY 	   BrowserLauncher.lib
 LIBRARY            libc.lib libm.lib
 STATICLIBRARY 	   libzbar.lib
 
-LANG SC 01 14 
+LANG SC 01 14 40
 
 VENDORID	0
 SECUREID	0xcdbe9aa7

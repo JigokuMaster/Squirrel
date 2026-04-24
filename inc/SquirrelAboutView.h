@@ -13,12 +13,67 @@
 // INCLUDES
 #include <aknview.h>
 #include <eiklbo.h>
-//#include <browserlauncher.h>
+#include <brctlinterface.h>
 #include "uicommons.h"
 
 
 // CLASS DECLARATION
-class CSquirrelAboutView : public CAknView, MEikListBoxObserver
+
+/**
+ *  CWebView
+ * 
+ */
+class CWebView : public CCoeControl
+	{
+public:
+	// Constructors and destructor
+
+	/**
+	 * Destructor.
+	 */
+	~CWebView();
+
+	/**
+	 * Two-phased constructor.
+	 */
+	static CWebView* NewL(const TRect& aRect);
+
+	/**
+	 * Two-phased constructor.
+	 */
+	static CWebView* NewLC(const TRect& aRect);
+	
+private:
+
+	/**
+	 * Constructor for performing 1st stage construction
+	 */
+	CWebView();
+
+	/**
+	 * EPOC default constructor for performing 2nd stage construction
+	 */
+	void ConstructL(const TRect& aRect);
+
+	virtual void SizeChanged();
+
+        virtual TInt CountComponentControls() const; 
+
+        virtual CCoeControl* ComponentControl(TInt aIndex) const; 
+
+
+	void HandlePointerEventL(const TPointerEvent& aPointerEvent);
+
+public:
+        TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
+
+
+public: //data 
+        // Pointer to the browser control interface
+        CBrCtlInterface* iBrCtlInterface;
+};
+
+class CSquirrelAboutView : public CAknView
 {
 public:
 	// New methods
@@ -69,10 +124,6 @@ public:
         */
         void DoDeactivate();
 
-	virtual void HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEventType);
-	
-	//void OpenLinkL();
-
 private:
 	// Constructors
 	void ConstructL();
@@ -83,15 +134,9 @@ private:
 	 */
 	CSquirrelAboutView();
 
-	//static TInt OpenLink(TAny* aArg);
-
-	void ShowOSNoticeL();
 
 private:
-	TListBox<DOUBLE_STYLE> *iListbox;
-	//CBrowserLauncher* iBrowserLauncher;
-	TBuf<512> iLinkBuf;
-	HBufC* iOSNoticeContent;
+	CWebView* iContainer;
 };
 
 #endif // __SQUIRRELABOUTVIEW_h__

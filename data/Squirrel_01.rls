@@ -23,22 +23,13 @@ rls_string qtn_mainview_item3_string "2\tOpen"
 rls_string qtn_mainview_item4_string "3\tHistory"
 rls_string qtn_mainview_item5_string "4\tAbout"
 
-//rls_string qtn_mainview_item1_string "0\tOpen"
-//rls_string qtn_mainview_item2_string "1\tHistory"
-//rls_string qtn_mainview_item3_string "2\tScan"
-//rls_string qtn_mainview_item4_string "3\tGenerate"
-//rls_string qtn_mainview_item5_string "4\tAbout"
+rls_string qtn_mainview_cmd1_string "Language"
+rls_string qtn_mainview_subcmd1_string "English"
+rls_string qtn_mainview_subcmd2_string "Turkish"
+rls_string qtn_mainview_subcmd3_string "Belarussian"
+rls_string qtn_mainview_subcmd4_string "Polish"
+rls_string qtn_mainview_subcmd5_string "Vietnamese"
 
-// About view strings
-rls_string qtn_aboutview_item1_string "\tVersion\t1.0.0 (2026)"
-
-rls_string qtn_aboutview_item2_string "\tDeveloper\tJigokuMaster"
-
-rls_string qtn_aboutview_item3_string "\tUI & Icons Designer\tMert Çakır"
-
-rls_string qtn_aboutview_item4_string "\tTester & Turkish translation \tsymbuzzer"
-
-rls_string qtn_aboutview_item5_string "\tOpensource libraries\tView info"
 
 // decoder menu strings
 
@@ -143,14 +134,16 @@ rls_string qtn_about_title_string "About"
 
 rls_string qtn_settings_title_string "Settings"
 
-// dialog title
-rls_string qtn_contributor_about_string "About contributor:"
 
-// dialog title
-rls_string qtn_contributor_about_string "Katkıda bulunan hakkında:"
+rls_string qtn_restart_dlg_string "Restart is required to apply the change, Exit now?"
 
-// dialog message
-rls_string qtn_contributor1_info_string "Website: [http://avalibeyaz.com/symbian]"
+rls_string qtn_inputtext_hint_string "input text here." 
+
+rls_string qtn_cba_menu_string "Menu" 
+rls_string qtn_cba_exit_string "Exit" 
+rls_string qtn_cba_back_string "Back" 
+rls_string qtn_cba_yes_string "Yes" 
+rls_string qtn_cba_no_string "No" 
 
 rls_string qtn_loc_resource_file_1 "\\resource\\apps\\Squirrel"
 

@@ -71,7 +71,10 @@ public:
         void DoDeactivate();
 
 	void DynInitMenuPaneL(TInt aResourceId, CEikMenuPane *aMenuPane);
+	
+	TRect ClientRect() const;
 
+	void ToggleFullScreenMode();
 private:
 	// Constructors
 	void ConstructL();
@@ -97,6 +100,7 @@ private:
 	CQRCEncoderModel *iEncoderModel;
 	CTextEdit *iTextEdit;
 	CTelephony* iTelephony;
+	TBool iFullScreenMode;
 
 };
 

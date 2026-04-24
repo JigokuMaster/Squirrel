@@ -10,10 +10,13 @@ Description : Application view implementation
 // INCLUDE FILES
 #include <coemain.h>
 #include <Squirrel.rsg>
+#include <AknQueryDialog.h>
 #include "SquirrelAppUi.h"
 #include "SquirrelAppView.h"
 #include "Squirrel.hrh"
 #include "Squirrel.mbg"
+#include "SquirrelDocument.h"
+#include "SquirrelApplication.h"
 
 #define KNumberOfItems 5
 
@@ -297,9 +300,33 @@ TUid CSquirrelAppView::Id() const
     return TUid::Uid(EMainView); 
 }
 
+void CSquirrelAppView::DynInitMenuPaneL(TInt aResourceId ,CEikMenuPane* aMenuPane)
+{
+    if (aResourceId == R_LANGUAGE_SUBMENU)
+    {
+	TInt item = SelectedLanguageItemL();
+	if (item) aMenuPane->SetItemButtonState(item, EEikMenuItemSymbolOn);
+    }
+    else AppUi()->DynInitMenuPaneL(aResourceId , aMenuPane);
+
+}
+
 void CSquirrelAppView::HandleCommandL( TInt aCommand )
 {
-    AppUi()->HandleCommandL(aCommand);
+
+    switch(aCommand)
+    {
+	case ECmdSelectLanguage1:
+	case ECmdSelectLanguage14:
+	case ECmdSelectLanguage27:
+	case ECmdSelectLanguage40:
+	case ECmdSelectLanguage96:
+	    ChangeLanguageL(aCommand);
+	    break;
+	default:
+	    AppUi()->HandleCommandL(aCommand);
+	    break;
+    }
 }
 
 void CSquirrelAppView::HandleViewRectChange()
@@ -320,6 +347,7 @@ void CSquirrelAppView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
     TSize size = AppUi()->ApplicationRect().Size();
     iUseGrid = (size.iWidth == 320) && (size.iHeight == 240);
     SetAppTitleL(NULL, R_APP_TITLE);
+
     if (iUseGrid)
     {
 	iGridListbox = new (ELeave) CMainViewGrid;
@@ -339,15 +367,6 @@ void CSquirrelAppView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 	CEikScrollBarFrame* frame = iListbox->Listbox()->ScrollBarFrame();
 	if (frame) TRAP_IGNORE(frame->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff,CEikScrollBarFrame::EAuto));
 
-	/*TInt icon_ids[] = {
-	    EMbmSquirrelLoad,
-	    EMbmSquirrelHistory,	
-	    EMbmSquirrelDecode,
-	    EMbmSquirrelGenerate,
-	    EMbmSquirrelAbout
-	};*/
-
-
 	TInt icon_ids[] = {
 	    EMbmSquirrelScan,
 	    EMbmSquirrelGenerate,	
@@ -364,7 +383,6 @@ void CSquirrelAppView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 	AppUi()->AddToStackL(*this, iListbox);
 
     }
-    Cba()->MakeCommandVisible(EAknSoftkeyOptions, EFalse);
 }
 
 void CSquirrelAppView::DoDeactivate()
@@ -396,13 +414,84 @@ void CSquirrelAppView::HandleListBoxEventL(CEikListBox* aListBox , TListBoxEvent
 	if (viewIndex == EDecoderView)
 	{
 	    AppUi()->ActivateLocalViewL(TUid::Uid(EDecoderView), TUid::Uid(ECmdOpenImage), KNullDesC8);
-
 	}
 
 	else AppUi()->ActivateLocalViewL(TUid::Uid(viewIndex));
 
     }
 }
+
+
+TInt CSquirrelAppView::SelectedLanguageItemL()
+{
+    CEikAppUi* appui = reinterpret_cast<CEikAppUi*>(iEikonEnv->AppUi());
+    CSquirrelDocument* doc = static_cast<CSquirrelDocument*>(appui->Document());
+    TUint32 lang = static_cast<CSquirrelApplication*>(doc->Application())->iCurrentLanguage;
+    TInt item = 0;
+    switch (lang)
+    {
+	case ELangEnglish:
+	    item = ECmdSelectLanguage1;
+	    break;
+	case ELangTurkish:
+	    item = ECmdSelectLanguage14;
+	    break;
+	case ELangBelarussian:
+	    item = ECmdSelectLanguage40;
+	    break;
+	case ELangPolish:
+	    item = ECmdSelectLanguage27;
+	    break;
+	case ELangVietnamese:
+	    item = ECmdSelectLanguage96;
+	    break;
+	default: break;
+    }
+    return item;
+
+}
+
+
+void CSquirrelAppView::ChangeLanguageL(TInt aCommand)
+{
+    TLanguage lang = ELangTest;
+    switch (aCommand)
+    {
+	case ECmdSelectLanguage1:
+	    lang = ELangEnglish;
+	    break;
+	case ECmdSelectLanguage14:
+	    lang = ELangTurkish;
+	    break;
+	case ECmdSelectLanguage40:
+	    lang = ELangBelarussian;
+	    break;
+	case ECmdSelectLanguage27:
+	    lang = ELangPolish;
+	    break;
+	case ECmdSelectLanguage96:
+	    lang = ELangVietnamese;
+	    break;
+	default: break;
+    }
+
+    if (lang)
+    {
+	
+	CEikAppUi* appui = reinterpret_cast<CEikAppUi*>(iEikonEnv->AppUi());
+	CSquirrelDocument* doc = static_cast<CSquirrelDocument*>(appui->Document());
+	TBool ok = static_cast<CSquirrelApplication*>(doc->Application())->SaveLanguageL(lang);
+	if (ok)
+	{
+	    CAknQueryDialog* exitQuery = CAknQueryDialog::NewL();
+	    HBufC* prompt = iCoeEnv->AllocReadResourceLC(R_RESTART_CONFIRMATION_QUERY_PROMPT);
+	    exitQuery->SetPromptL(*prompt);  
+	    CleanupStack::PopAndDestroy(prompt);
+            if (exitQuery->ExecuteLD(R_GENERAL_CONFIRMATION_QUERY)) AppUi()->Exit();
+	}
+    }
+}
+
 
 
 // End of File

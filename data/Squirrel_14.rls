@@ -20,12 +20,14 @@ rls_string qtn_mainview_item3_string "2\tAç"
 rls_string qtn_mainview_item4_string "3\tGeçmiş"
 rls_string qtn_mainview_item5_string "4\tHakkında"
 
-// About view strings
-rls_string qtn_aboutview_item1_string "\tSürüm\t1.0.0 (2026)"
-rls_string qtn_aboutview_item2_string "\tGeliştirici\tJigokuMaster"
-rls_string qtn_aboutview_item3_string "\tUI & İkon Dizaynır\tMert Çakır"
-rls_string qtn_aboutview_item4_string "\tTest & Türkçe çeviri \tsymbuzzer"
-rls_string qtn_aboutview_item5_string "\tAçık kaynak kütüphaneleri\tGörüntüle"
+
+rls_string qtn_mainview_cmd1_string "Language"
+rls_string qtn_mainview_subcmd1_string "English"
+rls_string qtn_mainview_subcmd2_string "Turkish"
+rls_string qtn_mainview_subcmd3_string "Belarussian"
+rls_string qtn_mainview_subcmd4_string "Polish"
+rls_string qtn_mainview_subcmd5_string "Vietnamese"
+
 // decoder menu strings
 rls_string qtn_datamenu_title1_string "Metin:"
 rls_string qtn_datamenu_title2_string "Binary:"
@@ -81,12 +83,14 @@ rls_string qtn_about_title_string "Hakkında"
 rls_string qtn_settings_title_string "Ayarlar"
 
 
-// dialog title
-rls_string qtn_contributor_about_string "Katkıda bulunan hakkında:"
+rls_string qtn_restart_dlg_string "Restart is required to apply the change, Exit now?"
 
-// dialog message
-rls_string qtn_contributor1_info_string "Website: [http://avalibeyaz.com/symbian]"
-
+rls_string qtn_inputtext_hint_string "input text here." 
+rls_string qtn_cba_menu_string "Menu" 
+rls_string qtn_cba_exit_string "Exit" 
+rls_string qtn_cba_back_string "Back" 
+rls_string qtn_cba_yes_string "Yes" 
+rls_string qtn_cba_no_string "No" 
 
 rls_string qtn_loc_resource_file_1 "\\resource\\apps\\Squirrel"
 

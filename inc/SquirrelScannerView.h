@@ -34,12 +34,14 @@ private:
         void SizeChanged();
 	//TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
 
+
 public:
 	TInt SetupCamera(TInt aIndex=0);
 	void CleanupCamera();
 	void StartViewFinder();
 	void StopViewFinder();
 	TInt GetError() {return iError;};
+        static TInt TimerCallBack(TAny* aInstance);
 
 private:
 
@@ -79,6 +81,9 @@ private:
 	ScanHelper iScanHelper;
 	TBool iFoundCode;
 	TBool iViewFinderActivated;
+	CPeriodic*  iPeriodic;
+public:
+	TBool iDoFindCode;
 };
 
 

@@ -9,7 +9,7 @@
 ;Language - standard language definitions
 &EN
 
-#{"Squirrel"},(0xcdbe9aa7),1,0,0
+#{"Squirrel"},(0xcdbe9aa7),1,1,3
 
 
 ;Localised Vendor name
@@ -33,6 +33,7 @@
 "$(EPOCROOT)epoc32\release\$(PLATFORM)\$(TARGET)\Squirrel.exe"		-"!:\sys\bin\Squirrel.exe"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.rsc"		-"!:\resource\apps\Squirrel.rsc"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r14"		-"!:\resource\apps\Squirrel.r14"
+"$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r40"		-"!:\resource\apps\Squirrel.r40"
 "$(EPOCROOT)epoc32\data\z\private\10003a3f\apps\Squirrel_reg.rsc"	-"!:\private\10003a3f\import\apps\Squirrel_reg.rsc"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.mif" -"!:\resource\apps\Squirrel.mif"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel_ui.mif" -"!:\resource\apps\Squirrel_ui.mif"
@@ -40,7 +41,8 @@
 ;required for application to be covered by backup/restore facility 
 
 
+"..\data\about.html" -"!:\private\cdbe9aa7\about.html"
 
-"..\data\opensource.txt" -"!:\private\cdbe9aa7\opensource.txt"
+;"..\data\opensource.txt" -"!:\private\cdbe9aa7\opensource.txt"
 
 "..\sis\backup_registration.xml" -"!:\private\cdbe9aa7\backup_registration.xml"

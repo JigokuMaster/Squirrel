@@ -369,6 +369,8 @@ void CQRCEncoderModel::SaveImageL(TFileName &aFilePath)
 
 void CQRCEncoderModel::SendImageL()
 {
+    if (!ImageReady()) return;
+
     CFbsBitmap *bitmap = FullBitmap();
     RFs rfs = CEikonEnv::Static()->FsSession();
 
@@ -456,9 +458,9 @@ void CQRCEncoderModel::RedrawQRCImageL(TSize aSize)
 {
     if (iCachedBitmapDrawer)
     {
-	iBitmapDrawer->ClearL();
 	iBitmapDrawer->ResizeL(aSize);
-	TRect dst(iBitmapDrawer->Size());
+	iBitmapDrawer->ClearL();
+	TRect dst(TPoint(0,0), iBitmapDrawer->Size());
 	iBitmapDrawer->Gc()->DrawBitmap(dst, iCachedBitmapDrawer->Bitmap());
     }
 }

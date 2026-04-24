@@ -1,4 +1,3 @@
-
 #include "uicommons.h"
 #include <aknnotewrappers.h>
 #include <eikfrlbd.h>
@@ -390,8 +389,13 @@ void CBitmapDrawer::ResizeL(const TSize &aSize)
     User::LeaveIfNull(iBitmapDevice);
 
     User::LeaveIfError(iBitmap->Resize(aSize));
-
     User::LeaveIfError(iBitmapDevice->Resize(aSize));
+    if (iGc)
+    {
+	delete iGc;
+	iGc = NULL;
+    }
+    User::LeaveIfError(iBitmapDevice->CreateContext(iGc));
 }
 
 CFbsBitmap* CBitmapDrawer::Bitmap()
@@ -655,12 +659,7 @@ void CTextEdit::SetSkinnedL()
 		EFalse);
 	
 	SetSkinBackgroundControlContextL(iBgContext);
-	TInt error;
-	TRgb color;
-
-	error = AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), color, KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
-
-	if (error == KErrNone) SetTextColorL(color);
+	SetSkinnedTextColor();
     }
 }
 
@@ -756,11 +755,20 @@ void CTextEdit::HandleChangeL(TInt aNewCursorPos)
     SetCursorPosL(aNewCursorPos, EFalse);
 }
 
-void CTextEdit::SetTextColorL(TRgb color)
+void CTextEdit::SetTextColor(TRgb color)
 {
     iCharFormatMask.SetAttrib(EAttColor);
     iCharFormat.iFontPresentation.iTextColor = color;
 }
+
+void CTextEdit::SetSkinnedTextColor()
+{
+    TRgb textColor;
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), textColor, KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
+    SetTextColor(textColor);
+}
+
+
 
 void CTextEdit::SetFontL(TFontSpec& aFontSpec)
 {

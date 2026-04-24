@@ -56,6 +56,36 @@ private:
 
 // ============================ MEMBER FUNCTIONS ===============================
 
+
+
+// -----------------------------------------------------------------------------
+// CSquirrelGeneratorView::SquirrelGeneratorView()
+// C++ default constructor can NOT contain any code, that might leave.
+// -----------------------------------------------------------------------------
+//
+CSquirrelGeneratorView::CSquirrelGeneratorView()
+{
+    iContainer = NULL;
+    iImageView = NULL;
+    iEncoderModel = NULL;
+    iTextEdit = NULL;
+    iTelephony = NULL;
+    iFullScreenMode = EFalse;
+}
+
+// -----------------------------------------------------------------------------
+// CSquirrelGeneratorView::~SquirrelGeneratorView()
+// Destructor.
+// -----------------------------------------------------------------------------
+//
+CSquirrelGeneratorView::~CSquirrelGeneratorView()
+{
+    if (iEncoderModel) delete iEncoderModel;
+    if (iTelephony) delete iTelephony;
+}
+
+
+
 // -----------------------------------------------------------------------------
 // CSquirrelGeneratorView::NewL()
 // Two-phased constructor.
@@ -94,25 +124,25 @@ void CSquirrelGeneratorView::ConstructL()
 
 void CSquirrelGeneratorView::SetupControlsL()
 {
-    iImageView = new (ELeave) CEikImage;
+    iImageView = new (ELeave) CEikImage();
     iImageView->SetPictureOwnedExternally(ETrue);
     iImageView->SetContainerWindowL(*iContainer);
     iContainer->AddControlL(iImageView);
     
-    iTextEdit = new (ELeave) CTextEdit;
+    iTextEdit = new (ELeave) CTextEdit();
     iTextEdit->ConstructL(ClientRect(), iContainer);
-    iTextEdit->SetBorder(TGulBorder::EDeepSunken);
-    TRgb textColor;
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), textColor, KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
-    iTextEdit->SetTextColorL(textColor);
+    iTextEdit->SetSkinnedTextColor();
+    
+    //HBufC* prompt = iCoeEnv->AllocReadResourceLC(R_EDITOR_PROMPT); 
+    //iTextEdit->WriteL(*prompt);
+    //CleanupStack::PopAndDestroy(prompt);
+    iTextEdit->WriteL(_L(""));
 
-    iTextEdit->WriteL(_L("text string"));
     iTextEdit->SetMaxLength(QRCEncoder::MaxBufferSize);
-    iTextEdit->SetFocus(ETrue);
     iContainer->AddControlL(iTextEdit);
-
-
+    
     LayoutControls();
+
     if (!iEncoderModel)
     {
 	iEncoderModel = new (ELeave) CQRCEncoderModel(iImageView->Size());
@@ -121,9 +151,8 @@ void CSquirrelGeneratorView::SetupControlsL()
     
     iImageView->SetBitmap(iEncoderModel->Bitmap());
     iContainer->UpdateControl(1, EFalse);
+
 }
-
-
 
 void CSquirrelGeneratorView::LayoutControls()
 {
@@ -142,7 +171,7 @@ void CSquirrelGeneratorView::LayoutControls()
     TInt editorHeight = rh-imgBaseSize;   
     TRect rect2(TPoint(edge, edge+imgBaseSize), TSize(editorWidth, editorHeight));
     iTextEdit->SetRect(rect2);
-
+    iTextEdit->SetFocus(ETrue);
 }
 
 void CSquirrelGeneratorView::DoGenerateL()
@@ -237,8 +266,6 @@ void CSquirrelGeneratorView::DoGenerateFromIPAddressL()
     rss.Close(); 
 }
 
-#include <utf.h> 
-
 void CSquirrelGeneratorView::DoGenerateFromTemplateL(const TInt aCmd)
 {
     
@@ -263,14 +290,9 @@ void CSquirrelGeneratorView::DoGenerateFromTemplateL(const TInt aCmd)
 	{
 	    CContactSelectionDlg* sel = CContactSelectionDlg::NewL();
 	    TInt index = sel->ShowL();
-	    if (index >= 0) {
-	     	iTextEdit->ClearL();
+	    if (index >= 0){
 		iEncoderModel->EncodeL(sel->GetVCardL(index));	
-		/*TPtr8 p = sel->GetVCardL(index);
-		HBufC16* out = CnvUtfConverter::ConvertToUnicodeFromUtf8L(p);
-		iTextEdit->WriteL(*out);*/
 	    }
-
 	    CleanupStack::PopAndDestroy(sel);
 	    break;
 	}
@@ -300,32 +322,6 @@ void CSquirrelGeneratorView::DoSaveImageL()
     if (ok) iEncoderModel->SaveImageL(fp);
     else DoSaveImageL();
 
-}
-
-
-// -----------------------------------------------------------------------------
-// CSquirrelGeneratorView::SquirrelGeneratorView()
-// C++ default constructor can NOT contain any code, that might leave.
-// -----------------------------------------------------------------------------
-//
-CSquirrelGeneratorView::CSquirrelGeneratorView()
-{
-    iContainer = NULL;
-    iImageView = NULL;
-    iEncoderModel = NULL;
-    iTextEdit = NULL;
-    iTelephony = NULL;
-}
-
-// -----------------------------------------------------------------------------
-// CSquirrelGeneratorView::~SquirrelGeneratorView()
-// Destructor.
-// -----------------------------------------------------------------------------
-//
-CSquirrelGeneratorView::~CSquirrelGeneratorView()
-{
-    if (iEncoderModel) delete iEncoderModel;
-    if (iTelephony) delete iTelephony;
 }
 
 
@@ -372,7 +368,7 @@ void CSquirrelGeneratorView::HandleCommandL( TInt aCommand )
 
 void CSquirrelGeneratorView::HandleViewRectChange()
 {
-    if (iContainer){
+    if (iContainer && !iFullScreenMode){
 	iContainer->SetRect(ClientRect());
 	LayoutControls();
 	iEncoderModel->RedrawQRCImageL(iImageView->Size());
@@ -381,6 +377,40 @@ void CSquirrelGeneratorView::HandleViewRectChange()
     }
     
 }
+
+TRect CSquirrelGeneratorView::ClientRect() const
+{
+    return (iFullScreenMode ? AppUi()->ApplicationRect() : CAknView::ClientRect() );
+}
+
+void CSquirrelGeneratorView::ToggleFullScreenMode()
+{
+    iFullScreenMode = !iFullScreenMode;
+   
+    if (iFullScreenMode)
+    {
+	if (!iEncoderModel->ImageReady())
+	{
+	    iFullScreenMode = EFalse;
+	    return;
+	}
+	iImageView->SetExtentToWholeScreen();
+	iTextEdit->SetRect(TRect(0,0,0,0));
+	iTextEdit->SetFocus(EFalse, EDrawNow);
+
+    }
+
+    else
+    {
+	LayoutControls();
+    }
+
+    iContainer->SetRect(ClientRect());
+    iEncoderModel->RedrawQRCImageL(iImageView->Size());
+    iContainer->DrawNow();
+}
+
+
 
 void CSquirrelGeneratorView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 	TUid /*aCustomMessageId*/,

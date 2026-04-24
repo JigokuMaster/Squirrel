@@ -38,7 +38,8 @@ enum TSquirrelCmds
 	ECmdDecodeImageFile,
 	ECmdDecodeImageData,
 	ECmdDecodeBitmap,
-	ECmdOpenQRCDataMenu,
+	ECmdOpenDataMenu,
+	ECmdSendPayload,
 	ECmdOpenGeneratorSettings,
 	ECmdExport,
 	ECmdSelectMemo,
@@ -46,8 +47,13 @@ enum TSquirrelCmds
 	ECmdSelectCalendar,
 	ECmdSelectBookmark,
 	ECmdSelectIP,
-	ECmdSelectIMEI
-
+	ECmdSelectIMEI,
+	ECmdChangeLanguage,
+	ECmdSelectLanguage1,
+	ECmdSelectLanguage14,
+	ECmdSelectLanguage40,
+	ECmdSelectLanguage27,
+	ECmdSelectLanguage96
 
 };
 

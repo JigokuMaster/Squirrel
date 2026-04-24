@@ -22,6 +22,10 @@
 #include "Squirrel_14.rls"   // Turkish
 #elif defined LANGUAGE_31
 #include "Squirrel_31.rls"   // PRC Chinese
+#elif defined LANGUAGE_40
+#include "Squirrel_40.rls"   // Belarussian
 #elif defined LANGUAGE_32
 #include "Squirrel_32.rls"   // Japanese
+#elif defined LANGUAGE_96
+#include "Squirrel_96.rls"   // Vietnamese
 #endif

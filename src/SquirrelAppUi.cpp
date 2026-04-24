@@ -122,6 +122,22 @@ void CSquirrelAppUi::HandleWsEventL(const TWsEvent& aEvent, CCoeControl* aDestin
 		    iHistoryView->HandleCommandL(ECmdDeleteHistory);
 		}
 		break;
+
+	    case EKeyYes:
+		if (IsViewActivated(iGeneratorView))
+		{
+		    iGeneratorView->HandleCommandL(ECmdSendImage);
+		}
+		else if (IsViewActivated(iDecoderView))
+		{
+		    iDecoderView->HandleCommandL(ECmdSendPayload);
+		}
+	    case '4':
+		if (IsViewActivated(iGeneratorView))
+		{
+		    iGeneratorView->ToggleFullScreenMode();
+		}
+		break;
 	    default: break;
 	}
     }
@@ -129,7 +145,6 @@ void CSquirrelAppUi::HandleWsEventL(const TWsEvent& aEvent, CCoeControl* aDestin
     CAknViewAppUi::HandleWsEventL(aEvent, aDestination);
 
 }
-
 
 void CSquirrelAppUi::HandleResourceChangeL(TInt aType)
 {
@@ -141,7 +156,7 @@ void CSquirrelAppUi::HandleResourceChangeL(TInt aType)
 	{
 	    View(viewId.iViewUid)->HandleViewRectChange();
 	    if ((viewId.iViewUid == TUid::Uid(EMainView)) || (viewId.iViewUid == TUid::Uid(EScannerView)) ){
-		ActivateLocalViewL(viewId.iViewUid);
+	    	ActivateLocalViewL(viewId.iViewUid);
 	    }
 	}
     }

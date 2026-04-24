@@ -142,7 +142,9 @@ class CTextEdit : public CEikRichTextEditor
 
 	TInt SetPos(TInt aPos);
 
-	void SetTextColorL(TRgb color);
+	void SetTextColor(TRgb color);
+
+	void SetSkinnedTextColor();
 
 	void SetFontL(TFontSpec&);
 

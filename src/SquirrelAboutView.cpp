@@ -9,18 +9,134 @@ Description : Application view implementation
 
 // INCLUDE FILES
 #include <coemain.h>
-#include <aknmessagequerydialog.h>
-#include <AknQueryDialog.h>
-//#include <aknnotewrappers.h>
-//#include <stringloader.h>
-#include <f32file.h>
-#include <s32file.h>
-#include <utf.h> // CnvUtfConverter
+#include <bautils.h>
 #include "SquirrelAppUi.h"
 #include "SquirrelAboutView.h"
 #include "Squirrel.rsg"
 #include "Squirrel.hrh"
 #include "SquirrelModel.h"
+
+#include <eikenv.h>
+#include <f32file.h>
+
+#ifdef __WINSCW__
+_LIT(KHTMLFile, "C:\\System\\Apps\\Squirrel\\about.html");
+#else
+_LIT(KHTMLFile, "about.html");
+#endif
+
+CWebView::CWebView()
+{
+    iBrCtlInterface = NULL;
+}
+
+CWebView::~CWebView()
+{
+    if (iBrCtlInterface) delete iBrCtlInterface;
+
+}
+
+CWebView* CWebView::NewLC(const TRect& aRect)
+{
+    CWebView* self = new (ELeave) CWebView();
+    CleanupStack::PushL(self);
+    self->ConstructL(aRect);
+    return self;
+}
+
+CWebView* CWebView::NewL(const TRect& aRect)
+{
+    CWebView* self = CWebView::NewLC(aRect);
+    CleanupStack::Pop(); // self;
+    return self;
+}
+
+void CWebView::ConstructL(const TRect& aRect)
+{
+    CreateWindowL();
+    iBrCtlInterface = CreateBrowserControlL(this, 
+	aRect, 
+	0/*TBrCtlDefs::ECapabilityDisplayScrollBar*/,
+	TBrCtlDefs::ECommandIdBase, 
+        NULL, 
+        NULL, 
+        NULL,
+        NULL,
+	NULL
+    );
+    //iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsSmallScreen, 1);
+    iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsTextWrapEnabled, 1);
+#ifdef __WINSCW__
+    if (BaflUtils::FileExists(iEikonEnv->FsSession(), KHTMLFile))
+    {
+	iBrCtlInterface->LoadFileL(KHTMLFile);
+    }
+#else
+    // load from private folder
+    TFileName fp; // full path
+    TFileName privatePath;
+    iEikonEnv->FsSession().PrivatePath(privatePath);
+    fp.Append(RProcess().FileName().Left(2)); // C: or E: etc...
+    fp.Append(privatePath);     
+    fp.Append(KHTMLFile);
+    if (BaflUtils::FileExists(iEikonEnv->FsSession(), fp))
+    {
+	iBrCtlInterface->LoadFileL(fp);
+    }
+   
+#endif
+
+    SetRect(aRect);
+    SetBlank();
+    ActivateL();
+}
+
+
+TInt CWebView::CountComponentControls() const
+{
+    if (iBrCtlInterface)
+    {
+        return 1;
+    }
+    return 0;
+
+}
+
+CCoeControl* CWebView::ComponentControl(TInt aIndex) const
+{
+    switch ( aIndex )
+    {
+        case 0:
+            return iBrCtlInterface; // Could be NULL
+        default:
+            return NULL;
+    }
+}
+
+void CWebView::SizeChanged()
+{
+    if (iBrCtlInterface)
+    {
+        iBrCtlInterface->SetRect(Rect());
+    }
+}
+
+void CWebView::HandlePointerEventL(const TPointerEvent& aPointerEvent)
+{
+
+    CCoeControl::HandlePointerEventL(aPointerEvent);
+    if (iBrCtlInterface) iBrCtlInterface->HandlePointerEventL(aPointerEvent);
+
+}
+
+TKeyResponse CWebView::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType)
+{
+    if (iBrCtlInterface)
+    {
+	return iBrCtlInterface->OfferKeyEventL(aKeyEvent, aType);
+    }
+    return EKeyWasConsumed;
+}
 
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -67,9 +183,7 @@ void CSquirrelAboutView::ConstructL()
 //
 CSquirrelAboutView::CSquirrelAboutView()
 {
-    iListbox = NULL;
-    //iBrowserLauncher = NULL;
-    iOSNoticeContent = NULL;
+    iContainer = NULL;
 
 }
 
@@ -80,17 +194,11 @@ CSquirrelAboutView::CSquirrelAboutView()
 //
 CSquirrelAboutView::~CSquirrelAboutView()
 {
-   
-    if ( iListbox )
+    if (iContainer)
     {
-	AppUi()->RemoveFromStack( iListbox );
-	delete iListbox;
-    } 
-    
-    //if (iBrowserLauncher) delete iBrowserLauncher;
-    if (iOSNoticeContent) delete iOSNoticeContent;
-    iOSNoticeContent = NULL;
-	
+	delete iContainer;
+	iContainer = NULL;
+    }
 }
 
 
@@ -106,12 +214,11 @@ void CSquirrelAboutView::HandleCommandL( TInt aCommand )
 }
 
 
-
 void CSquirrelAboutView::HandleViewRectChange()
 {
-    if (iListbox)
+    if (iContainer)
     {
-	iListbox->SetRect(ClientRect());
+	iContainer->SetRect(ClientRect());
     }   
 }
 
@@ -121,141 +228,21 @@ void CSquirrelAboutView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 	const TDesC8& /*aCustomMessage*/ )
 {
     SetAppTitleL(NULL, R_ABOUT_TITLE);
-    iListbox = new (ELeave) TListBox<DOUBLE_STYLE>;
-    iListbox->ConstructL(NULL, ClientRect(), R_ABOUTVIEW_LISTBOX);
-    iListbox->SetObserver(this);
-    iListbox->Listbox()->ItemDrawer()->FormattedCellData()->EnableMarqueeL(ETrue);
-    iListbox->SetMopParent(this);
-    
+
+    if (!iContainer) iContainer = CWebView::NewL(ClientRect());
+    iContainer->SetMopParent(this);
+    AppUi()->AddToStackL(*this, iContainer); 
     Cba()->MakeCommandVisible(EAknSoftkeyOptions, EFalse);
-
-    AppUi()->AddToStackL(*this, iListbox);    
+   
 }
-
-
 
 
 void CSquirrelAboutView::DoDeactivate()
 {
-
-    if ( iListbox )
+    if ( iContainer )
     {
-	AppUi()->RemoveFromViewStack( *this, iListbox );
-	delete iListbox;
-	iListbox = NULL;
-    }    
+	AppUi()->RemoveFromViewStack(*this, iContainer);
+    }  
 }
 
-
-void CSquirrelAboutView::HandleListBoxEventL(CEikListBox* aListBox , TListBoxEvent aEventType)
-{
-    if ((aEventType == EEventEnterKeyPressed) || (aEventType == EEventItemClicked))
-    {
-
-	TInt itemIndex = iListbox->Listbox()->CurrentItemIndex();
-	if (itemIndex == 4) ShowOSNoticeL();
-
-#if 0	
-	if (itemIndex == 3)
-	{
-	    
-	    HBufC* msg = iCoeEnv->AllocReadResourceLC(R_CONTRIBUTOR1_INFO);
-	    CAknMessageQueryDialog* dlg = new (ELeave) CAknMessageQueryDialog;
-	    dlg->PrepareLC(R_ABOUT_QUERY_DIALOG);
-
-	    TPtr msgPtr = msg->Des();
-	    TInt prefix = msgPtr.Find(_L("["));
-	    TInt suffix = msgPtr.Find(_L("]"));
-	    iLinkBuf.Zero();
-	    if (suffix != KErrNotFound && prefix != KErrNotFound)
-	    {
-		prefix++;
-		TInt len = msgPtr.Length() - prefix - 1;
-		iLinkBuf.Copy(msgPtr.Mid(prefix, len));
-		msgPtr.Delete(prefix-1, 1);
-		msgPtr.Delete(suffix-1, 1);
-		TCallBack cb(CSquirrelAboutView::OpenLink, this);
-		dlg->SetLink(cb);
-		dlg->SetLinkTextL(iLinkBuf);
-	    }
-
-	    dlg->SetMessageTextL(*msg);
-	    dlg->RunLD();
-	    CleanupStack::PopAndDestroy(msg);
-	    //CAknQueryDialog* q = CAknQueryDialog::NewL();
-            /*if (q->ExecuteLD(R_GENERAL_CONFIRMATION_QUERY))
-	    {
-	    }*/
-
-	}
-#endif
-
-    }
-}
-
-/*void CSquirrelAboutView::OpenLinkL()
-{
-    if (!iBrowserLauncher)
-    {
-	iBrowserLauncher = CBrowserLauncher::NewL();
-    }
-    iBrowserLauncher->LaunchBrowserEmbeddedL(iLinkBuf);
-}
-
-TInt CSquirrelAboutView::OpenLink(TAny* aArg)
-{
-    TRAPD(err, STATIC_CAST(CSquirrelAboutView*,aArg)->OpenLinkL());
-    if (err != KErrNone) ShowErrorL(err);
-    return 0;
-}
-*/
-
-void CSquirrelAboutView::ShowOSNoticeL()
-{
-
-  
-    if (!iOSNoticeContent)
-    {
-	RFile file;
-	TInt fileSize;
-	TFileName fp;
-
-	GetPrivateFilePathL(iCoeEnv->FsSession(), fp, _L("opensource.txt"));	
-	User::LeaveIfError(file.Open(iCoeEnv->FsSession(), fp, EFileRead));
-	User::LeaveIfError(file.Size(fileSize));
-	
-	HBufC8* fileContentBuf = HBufC8::NewLC(fileSize);
-	TPtr8 fileContentBufPtr(fileContentBuf->Des());
-        User::LeaveIfError(file.Read(fileContentBufPtr));
-	file.Close();
-
-	iOSNoticeContent = HBufC::NewL(fileSize*3);
-	TPtr buf(iOSNoticeContent->Des());
-	TInt err = CnvUtfConverter::ConvertToUnicodeFromUtf8(buf, fileContentBufPtr);
-	CleanupStack::PopAndDestroy(fileContentBuf);
-
-	if (err != KErrNone){
-	    ShowErrorL(err);
-	    return;
-	}
-	
-    }
-
-    CAknMessageQueryDialog* dlg = new (ELeave) CAknMessageQueryDialog;
-
-    dlg->PrepareLC(R_AVKON_MESSAGE_QUERY_DIALOG);
-   
-    if (iOSNoticeContent && iOSNoticeContent->Length() > 0)
-    {
-
-	dlg->SetMessageTextL(*iOSNoticeContent);
-    }
-    else
-    {
-	dlg->SetMessageTextL(_L("empty."));
-    }
-
-    dlg->ButtonGroupContainer().MakeCommandVisible(EAknSoftkeyCancel, EFalse);
-    dlg->RunLD();
-}
 // End of File

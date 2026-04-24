@@ -34,11 +34,17 @@ class CSquirrelApplication : public CAknApplication
 public:
 	// Functions from base classes
 
+	TFileName ResourceFileName() const;
+	
 	/**
 	 * From CApaApplication, AppDllUid.
 	 * @return Application's UID (KUidSquirrelApp).
 	 */
 	TUid AppDllUid() const;
+
+	TBool ReadLanguageL(TFileName &aFileName) const;
+
+	TBool SaveLanguageL(const TLanguage aLanguage);
 
 protected:
 	// Functions from base classes
@@ -50,6 +56,11 @@ protected:
 	 * @return A pointer to the created document object.
 	 */
 	CApaDocument* CreateDocumentL();
+
+public:
+	// Data
+	mutable TUint32 iCurrentLanguage;
+
 	};
 
 #endif // __SQUIRRELAPPLICATION_H__

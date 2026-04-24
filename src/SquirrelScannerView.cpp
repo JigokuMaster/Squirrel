@@ -54,15 +54,19 @@ CCamScanView* CCamScanView::NewL(const TRect& aRect, const CCoeControl* aParent)
 CCamScanView* CCamScanView::NewLC(const TRect& aRect,const CCoeControl* aParent)
 {
     CCamScanView* self = new (ELeave) CCamScanView;
-    CleanupStack::PushL(self );
+    CleanupStack::PushL(self);
     self->ConstructL(aRect, aParent);
     return self;
 }
 
 void CCamScanView::ConstructL(const TRect& aRect ,const CCoeControl* aParent)
 {
-    iViewFinderSize = aRect.Size();
 
+    const TInt KTimerInterval(3*1000000); // 3 seconds
+    iPeriodic = CPeriodic::NewL(CActive::EPriorityIdle);
+    iPeriodic->Start(KTimerInterval, KTimerInterval, TCallBack(CCamScanView::TimerCallBack, this));
+
+    iViewFinderSize = aRect.Size();
     if (aParent) CreateWindowL(aParent);
     else CreateWindowL();
 
@@ -70,6 +74,7 @@ void CCamScanView::ConstructL(const TRect& aRect ,const CCoeControl* aParent)
     SetRect(aRect);  
     // Activate the window, which makes it ready to be drawn
     ActivateL();
+
 
 }
 
@@ -79,11 +84,14 @@ CCamScanView::CCamScanView()
     iCameraIndex = 0;
     iError = KErrNone;
     iFoundCode = EFalse;
+    iDoFindCode = EFalse;
     iViewFinderActivated = EFalse;
 }
 
 CCamScanView::~CCamScanView()
 {
+    delete iPeriodic;
+
     CleanupCamera();
 }
 
@@ -226,15 +234,6 @@ void CCamScanView::SizeChanged()
     }
 }
 
-/*void CCamScanView::HandleResourceChange(TInt aType)
-{
-    CCoeControl::HandleResourceChange( aType );
-    if (aType == KEikDynamicLayoutVariantSwitch )
-    {
-	DrawNow();
-    }
-}*/
-
 void CCamScanView::CreateBackBufferL()
 {
     // create back buffer bitmap
@@ -289,7 +288,7 @@ void CCamScanView::ShowError()
 
 void CCamScanView::FindCode(CFbsBitmap* aBitmap)
 {
-
+    iDoFindCode = EFalse; // reset
     TInt ret = iScanHelper.FindCode(aBitmap);
     if (ret == -1)
     {
@@ -316,6 +315,15 @@ void CCamScanView::FindCode(CFbsBitmap* aBitmap)
 	}
 	ShowError();
     }	
+}
+
+TInt CCamScanView::TimerCallBack(TAny* aInstance)
+{
+    CCamScanView* scanner = (CCamScanView*)aInstance;
+    scanner->iDoFindCode = ETrue;
+    // keep the screen light on.
+    User::ResetInactivityTime();
+    return 0;
 }
 
 
@@ -365,7 +373,7 @@ void CCamScanView::ViewFinderFrameReady(CFbsBitmap& aFrame)
         // Copy received viewfinder picture to back buffer
         iBackBufferContext->BitBlt( pos, &aFrame, TRect(TPoint( 0, 0 ), bmpSizeInPixels ));
 
-	FindCode(&aFrame);
+	if (iDoFindCode) FindCode(&aFrame);
         // Update backbuffer into screen 
         DrawNow();	
 

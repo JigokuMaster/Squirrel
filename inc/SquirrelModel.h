@@ -113,6 +113,7 @@ class CDecoderModel: public CActive, NOCRUtils::MImageHandlerCallback
 
 public:
 	CDecoderModel();
+
 	~CDecoderModel();
 
 	CViewContainer* SetupViewL(const TRect &aRect);
@@ -137,6 +138,7 @@ public:
 
 	void ShowDataMenuL(TBool aNewData=ETrue);
 	
+	void SendPayloadL();
 
 private:
 
@@ -145,8 +147,6 @@ private:
 	void DecodeFinishedL(const TDesC *aFileName=NULL);
 
 	void ViewPayloadL(TDesC &aPayload);
-
-	void SendPayloadL();
 
 	void DisplayQRInfoL();
 

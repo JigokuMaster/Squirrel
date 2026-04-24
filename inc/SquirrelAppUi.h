@@ -57,6 +57,7 @@ public:
 	void ActivateDecoderViewL(CFbsBitmap* aBitmap);
 	CHistoryStore* HistoryStore();
 
+
 private:
 	// Functions from base classes
 
@@ -70,7 +71,6 @@ private:
 	void HandleWsEventL(const TWsEvent& aEvent, CCoeControl* aDestination);
 
 	void HandleResourceChangeL(TInt aType);
-
 
 	/**
 	 *  HandleStatusPaneSizeChange.
@@ -87,6 +87,7 @@ private:
 	//CArrayFix<TCoeHelpContext>* HelpContextL() const;
 
 private:
+	// New functions
 
 	TBool IsViewActivated(CAknView* aView);
 
