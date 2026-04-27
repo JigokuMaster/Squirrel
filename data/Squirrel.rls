@@ -20,6 +20,8 @@
 #include "Squirrel_09.rls"   // Finnish
 #elif defined LANGUAGE_14    
 #include "Squirrel_14.rls"   // Turkish
+#elif defined LANGUAGE_16
+#include "Squirrel_16.rls"   // Russian
 #elif defined LANGUAGE_27
 #include "Squirrel_27.rls"   // Polish
 #elif defined LANGUAGE_31
