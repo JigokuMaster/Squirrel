@@ -54,6 +54,152 @@ private:
 };
 
 
+
+// Implementation of CTextEditWrapper
+
+void CTextEditWrapper::ConstructL(const TRect& aRect, const CCoeControl* aParent)
+{
+    if (aParent) {
+	SetContainerWindowL(*aParent);
+    }
+
+    else {
+	CreateWindowL();
+    }
+
+    
+    iRtEd = new (ELeave) CEikRichTextEditor;
+    iRtEd->ConstructL(this,0,0,0);
+    iRtEd->SetFocus(ETrue);
+    iRtEd->SetMaxLength(QRCEncoder::MaxBufferSize);
+    iRtEd->SetAknEditorFlags(EAknEditorFlagEnableScrollBars);
+    iRtEd->EnableCcpuSupportL(ETrue); 
+    iRtEd->CreateScrollBarFrameL();
+    CEikScrollBarFrame *frame = iRtEd->ScrollBarFrame();
+    if (frame)
+    {
+	frame->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff, CEikScrollBarFrame::EAuto);
+    }
+
+    SetRect(aRect);
+    ActivateL();
+}
+
+CTextEditWrapper::~CTextEditWrapper()
+{
+    if(iRtEd) delete iRtEd;
+}
+
+void CTextEditWrapper::SizeChanged()
+{
+    if (!iRtEd) return;
+    
+    TSize size = Size(); 
+
+    CEikScrollBarFrame *frame = iRtEd->ScrollBarFrame();
+    if (frame)
+    {
+	size.iWidth -= iRtEd->ScrollBarFrame()->VerticalScrollBar()->ScrollBarBreadth();
+    }
+
+    iRtEd->SetExtent(Position(), size); 
+}
+
+TInt CTextEditWrapper::CountComponentControls() const
+{
+    return ( iRtEd ? 1 : 0);
+}
+
+CCoeControl* CTextEditWrapper::ComponentControl(TInt aIndex) const
+{
+    switch (aIndex)
+    {
+	case 0:
+            return iRtEd;
+        default:
+            return NULL;
+    }
+}
+
+TKeyResponse CTextEditWrapper::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
+{
+    if (iRtEd && iRtEd->IsFocused())
+    {
+	if ( aKeyEvent.iCode == EKeyDevice3 )
+	{
+	    TInt pos = iRtEd->CursorPos();
+	    iRtEd->RichText()->InsertL(pos , CEditableText::ELineBreak);
+	    iRtEd->HandleTextChangedL();
+	    iRtEd->SetCursorPosL(++pos, EFalse);
+	}
+	else return iRtEd->OfferKeyEventL(aKeyEvent, aType);	
+    }
+    return EKeyWasNotConsumed;
+}
+
+void CTextEditWrapper::SetSkinnedTextColorL()
+{
+
+    TRgb textColor;
+    TInt err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), textColor, KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
+    if (err != KErrNone || IsEmpty()) return;
+
+    TCharFormat charFormat;
+    TCharFormatMask charFormatMask;
+    charFormat.iFontPresentation.iTextColor = textColor;
+    charFormatMask.SetAttrib(EAttColor);
+    iRtEd->ApplyCharFormatL(charFormat, charFormatMask); // crash if the editor is empty...
+}
+
+void CTextEditWrapper::SetTextL(const TDesC *aDes)
+{
+    if ( iRtEd ) iRtEd->SetTextL(aDes);
+}
+
+#if 0
+TPtrC CTextEditWrapper::GetText()
+{
+
+    TInt len = iRtEd->RichText()->DocumentLength();
+    TPtrC p = iRtEd->Text()->Read(0).Left(len);
+    TUint16* tp = (TUint16*)p.Ptr();
+    while (len--)
+    {
+	if (*tp == 0x2029) *tp = '\n';
+	++tp;
+    }
+    return p;
+}
+#endif
+
+HBufC* CTextEditWrapper::GetTextL()
+{
+
+    TInt len = iRtEd->RichText()->DocumentLength();
+    HBufC* buf = HBufC::NewL(len);
+    TPtr p = buf->Des();
+    iRtEd->RichText()->Extract(p, 0, len);
+    TUint16* tp = (TUint16*)p.Ptr();
+    while (len--)
+    {
+	if (*tp == 0x2029) *tp = '\n';
+	++tp;
+    }
+    //*buf = p;
+    return buf;
+}
+
+
+
+
+TBool CTextEditWrapper::IsEmpty()
+{
+    if ( !iRtEd ) return ETrue;
+    return iRtEd->RichText()->DocumentLength() == 0;
+}
+
+
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 
@@ -124,21 +270,27 @@ void CSquirrelGeneratorView::ConstructL()
 
 void CSquirrelGeneratorView::SetupControlsL()
 {
+
     iImageView = new (ELeave) CEikImage();
     iImageView->SetPictureOwnedExternally(ETrue);
     iImageView->SetContainerWindowL(*iContainer);
     iContainer->AddControlL(iImageView);
-    
-    iTextEdit = new (ELeave) CTextEdit();
-    iTextEdit->ConstructL(ClientRect(), iContainer);
-    iTextEdit->SetSkinnedTextColor();
-    
-    //HBufC* prompt = iCoeEnv->AllocReadResourceLC(R_EDITOR_PROMPT); 
-    //iTextEdit->WriteL(*prompt);
-    //CleanupStack::PopAndDestroy(prompt);
-    iTextEdit->WriteL(_L(""));
 
-    iTextEdit->SetMaxLength(QRCEncoder::MaxBufferSize);
+    iTextEdit = new (ELeave) CTextEditWrapper;	
+    iTextEdit->ConstructL(ClientRect(), iContainer);
+
+    /*
+    iTextEdit = new (ELeave) CEikRichTextEditor;	
+    iTextEdit->ConstructL(iContainer,0,0,0);
+    iTextEdit->SetFocus(ETrue);
+    iTextEdit->SetAknEditorFlags(EAknEditorFlagEnableScrollBars);
+    iTextEdit->EnableCcpuSupportL(ETrue); 
+    */
+    
+    HBufC* prompt = iCoeEnv->AllocReadResourceLC(R_EDITOR_PROMPT); 
+    iTextEdit->SetTextL(prompt);
+    CleanupStack::PopAndDestroy(prompt);
+    iTextEdit->SetSkinnedTextColorL();
     iContainer->AddControlL(iTextEdit);
     
     LayoutControls();
@@ -150,8 +302,7 @@ void CSquirrelGeneratorView::SetupControlsL()
     }
     
     iImageView->SetBitmap(iEncoderModel->Bitmap());
-    iContainer->UpdateControl(1, EFalse);
-
+    iContainer->UpdateControl(1, EFalse); // redraw TextEdit
 }
 
 void CSquirrelGeneratorView::LayoutControls()
@@ -166,18 +317,50 @@ void CSquirrelGeneratorView::LayoutControls()
     TInt imgBaseSize = (rh-editorMinHeight) - (edge*2);
     TRect rect1(TPoint(edge, 0), TSize(imgBaseSize, imgBaseSize));
     iImageView->SetRect(rect1);
-
     TInt editorWidth = rw-edge;  
-    TInt editorHeight = rh-imgBaseSize;   
-    TRect rect2(TPoint(edge, edge+imgBaseSize), TSize(editorWidth, editorHeight));
+    TInt editorHeight = rh-imgBaseSize-edge;   
+    TRect rect2(TPoint(edge, imgBaseSize), TSize(editorWidth, editorHeight));
     iTextEdit->SetRect(rect2);
     iTextEdit->SetFocus(ETrue);
+
 }
+
+void CSquirrelGeneratorView::ToggleFullScreenMode()
+{
+    iFullScreenMode = !iFullScreenMode;
+   
+    if (iFullScreenMode)
+    {
+	if (!iEncoderModel->ImageReady())
+	{
+	    iFullScreenMode = EFalse;
+	    return;
+	}
+	iImageView->SetExtentToWholeScreen();
+	iTextEdit->SetRect(TRect(0,0,0,0));
+	iTextEdit->SetFocus(EFalse, EDrawNow);
+
+    }
+
+    else
+    {
+	// set normal sizes
+	LayoutControls();
+    }
+
+    iContainer->SetRect(ClientRect());
+    iEncoderModel->RedrawQRCImageL(iImageView->Size());
+    iContainer->DrawNow();
+}
+
+
 
 void CSquirrelGeneratorView::DoGenerateL()
 {
-    TPtrC utf16Text = iTextEdit->Read();
-    iEncoderModel->EncodeL(utf16Text);
+    HBufC* textBuf = iTextEdit->GetTextL();
+    CleanupStack::PushL(textBuf);
+    iEncoderModel->EncodeL(*textBuf);
+    CleanupStack::PopAndDestroy(textBuf);
     iContainer->UpdateControl(0, EFalse);
 }
 
@@ -205,8 +388,7 @@ void CSquirrelGeneratorView::DoGenerateFromPhoneIMEIL(const TBool aRetry)
 	  DoGenerateFromPhoneIMEIL(EFalse);
 	  return;
       }
-      iTextEdit->ClearL();
-      iTextEdit->WriteL(phoneId.iSerialNumber);
+      iTextEdit->SetTextL(&phoneId.iSerialNumber);
       iEncoderModel->EncodeL(phoneId.iSerialNumber);
       iContainer->UpdateControl(0, EFalse);
   }
@@ -233,7 +415,7 @@ void CSquirrelGeneratorView::DoGenerateFromIPAddressL()
     error = sock.SetOpt(KSoInetEnumInterfaces, KSolInetIfCtrl);
     if (error == KErrNone)
     {
-	iTextEdit->ClearL();
+
 	while(sock.GetOpt(KSoInetNextInterface, KSolInetIfCtrl, ifinfopkg) == KErrNone)
 	{
 	    TSoInetInterfaceInfo &info = ifinfopkg();
@@ -252,9 +434,8 @@ void CSquirrelGeneratorView::DoGenerateFromIPAddressL()
 		    infoMsg.Format(_L("IFNAME: %S, ADDR: %S\n"), &ifinfo.iName, &ifAddress);
 		    infoMsg.Format(_L("IFNAME: %S, ADDR: %S\n"), &ifinfo.iName, &ifAddress);
 		    iTextEdit->WriteL(infoMsg);*/
-		    iTextEdit->ClearL();
 		    iEncoderModel->EncodeL(ifAddress);
-		    iTextEdit->WriteL(ifAddress);
+		    iTextEdit->SetTextL(&ifAddress);
 		    break;
 		}
 	    }
@@ -277,8 +458,7 @@ void CSquirrelGeneratorView::DoGenerateFromTemplateL(const TInt aCmd)
 	    if (out)
 	    {
 		iEncoderModel->EncodeL(*out);
-		iTextEdit->ClearL();
-		iTextEdit->WriteL(*out);
+		iTextEdit->SetTextL(out);
 		iContainer->UpdateControl(0, EFalse);
 		delete out;
 		out = NULL;
@@ -383,33 +563,6 @@ TRect CSquirrelGeneratorView::ClientRect() const
     return (iFullScreenMode ? AppUi()->ApplicationRect() : CAknView::ClientRect() );
 }
 
-void CSquirrelGeneratorView::ToggleFullScreenMode()
-{
-    iFullScreenMode = !iFullScreenMode;
-   
-    if (iFullScreenMode)
-    {
-	if (!iEncoderModel->ImageReady())
-	{
-	    iFullScreenMode = EFalse;
-	    return;
-	}
-	iImageView->SetExtentToWholeScreen();
-	iTextEdit->SetRect(TRect(0,0,0,0));
-	iTextEdit->SetFocus(EFalse, EDrawNow);
-
-    }
-
-    else
-    {
-	LayoutControls();
-    }
-
-    iContainer->SetRect(ClientRect());
-    iEncoderModel->RedrawQRCImageL(iImageView->Size());
-    iContainer->DrawNow();
-}
-
 
 
 void CSquirrelGeneratorView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
@@ -418,10 +571,20 @@ void CSquirrelGeneratorView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 {
     
     SetAppTitleL(NULL, R_GENERATOR_TITLE);
+
+    TBool _fullScreenMode = iFullScreenMode;    
+    iFullScreenMode = EFalse;
+
     iContainer = new (ELeave) CViewContainer;
     iContainer->ConstructL(ClientRect(), ETrue /* Skinned Container */);
     iContainer->SetMopParent(this);
     SetupControlsL();
+    // resize and redraw
+    if (_fullScreenMode)
+    {
+	iEncoderModel->RedrawQRCImageL(iImageView->Size());
+    }
+
     AppUi()->AddToStackL(*this, iContainer); 
 }
 

@@ -589,12 +589,14 @@ CTextEdit::~CTextEdit()
 
 void CTextEdit::ConstructL(const TRect& aRect, const CCoeControl* aParent)
 {
-    CEikRichTextEditor::ConstructL(aParent, 0, 0,
+    /*CEikRichTextEditor::ConstructL(aParent, 0, 0,
 	    EEikEdwinInclusiveSizeFixed|
 	    EEikEdwinNoAutoSelection|
 	    EEikEdwinAlwaysShowSelection, 0, 0);
+    */
 
-    SetContainerWindowL(*aParent);
+    CEikRichTextEditor::ConstructL(aParent, 0, 0, 0);
+    //SetContainerWindowL(*aParent);
     SetRect(aRect);
     ActivateL();
 }
@@ -606,7 +608,7 @@ TTypeUid::Ptr CTextEdit::MopSupplyObject(TTypeUid aId)
 	return MAknsControlContext::SupplyMopObject(aId, iBgContext);
     }
 
-    return CCoeControl::MopSupplyObject(aId);
+    return CEikRichTextEditor::MopSupplyObject(aId);
 }
 
 
@@ -641,12 +643,26 @@ void CTextEdit::SizeChanged()
 	    // normal
 	    iBgContext->SetBitmap(KAknsIIDQsnBgAreaMain);
 	}
-    iBgContext->SetRect(Rect());
+
+	iBgContext->SetRect(Rect());
     }
+
+   
     CEikRichTextEditor::HandleSizeChangedL();
     TextLayout()->RestrictScrollToTopsOfLines(EFalse);
+    DrawNow();
 }
 
+
+/*void CTextEdit::SetSize(const TSize &aSize)
+{
+    TSize size(aSize);
+    if (ScrollBarFrame())
+    {
+        size.iWidth -= ScrollBarFrame()->VerticalScrollBar()->ScrollBarBreadth();
+    }
+    CEikRichTextEditor::SetSize(size);
+}*/
 
 
 void CTextEdit::SetSkinnedL()

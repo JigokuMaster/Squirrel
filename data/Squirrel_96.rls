@@ -1,0 +1,148 @@
+/*
+============================================================================
+ Name        : Squirrel.rls
+ Author      : JigokuMaster
+ Translator  : Gemini
+ Description : Vietnamese localisation for Squirrel
+============================================================================
+*/
+
+CHARACTER_SET UTF8
+
+//  LOCALISATION STRINGS
+
+// Caption string for app.
+rls_string qtn_caption_string "Squirrel"
+
+// Main view strings
+rls_string qtn_mainview_item1_string "0\tQuét"
+rls_string qtn_mainview_item2_string "1\tTạo mã"
+rls_string qtn_mainview_item3_string "2\tMở"
+rls_string qtn_mainview_item4_string "3\tLịch sử"
+rls_string qtn_mainview_item5_string "4\tGiới thiệu"
+
+rls_string qtn_mainview_cmd1_string "Ngôn ngữ"
+rls_string qtn_mainview_subcmd1_string "Tiếng Anh"
+rls_string qtn_mainview_subcmd2_string "Tiếng Thổ Nhĩ Kỳ"
+rls_string qtn_mainview_subcmd3_string "Tiếng Belarus"
+rls_string qtn_mainview_subcmd4_string "Tiếng Ba Lan"
+rls_string qtn_mainview_subcmd5_string "Tiếng Việt"
+rls_string qtn_mainview_subcmd6_string "Russian"
+
+// decoder menu strings
+
+rls_string qtn_datamenu_title1_string "Văn bản:"
+
+rls_string qtn_datamenu_title2_string "Nhị phân:"
+
+rls_string qtn_decoderview_cmd1_string "Mở ảnh"
+
+rls_string qtn_decoderview_cmd2_string "Dữ liệu"
+
+rls_string qtn_decoder_datamenu_item1_string "Xem"
+
+rls_string qtn_decoder_datamenu_item2_string "Lưu vào Ghi chú"
+
+rls_string qtn_decoder_datamenu_item3_string "Chép vào bộ nhớ"
+
+rls_string qtn_decoder_datamenu_item4_string "Gửi"
+
+
+// decoder message strings
+rls_string qtn_decoder_msg1_string "Không tìm thấy mã QR!"
+
+rls_string qtn_decoder_msg2_string "Đang giải mã..."
+
+
+// history menu strings
+rls_string qtn_historyview_cmd1_string "Xóa"
+rls_string qtn_historyview_cmd2_string "Dọn sạch"
+
+// generator menu strings
+
+rls_string qtn_generatorview_cmd1_string "Mẫu"
+
+rls_string qtn_generatorview_cmd2_string "Tạo mã"
+
+rls_string qtn_generatorview_cmd3_string "Xuất"
+
+rls_string qtn_generatorview_cmd4_string "Cài đặt"
+
+// generator Templates menu strings
+
+rls_string qtn_generatorview_templates_cmd1_string "Ghi chú"
+
+rls_string qtn_generatorview_templates_cmd2_string "Danh bạ"
+
+rls_string qtn_generatorview_templates_cmd3_string "Lịch"
+
+rls_string qtn_generatorview_templates_cmd4_string "Dấu trang"
+
+rls_string qtn_generatorview_templates_cmd5_string "IP WIFI"
+
+rls_string qtn_generatorview_templates_cmd6_string "Số IMEI"
+
+
+// generator Export menu strings
+
+rls_string qtn_generatorview_export_cmd1_string "Lưu"
+
+rls_string qtn_generatorview_export_cmd2_string "Gửi"
+
+// generator Setting strings
+
+rls_string qtn_generatorsettings_item1_string "Phiên bản tối thiểu"
+
+rls_string qtn_generatorsettings_item2_string "Phiên bản tối đa"
+
+rls_string qtn_generatorsettings_item3_string "Sửa lỗi"
+
+rls_string qtn_generatorsettings_item4_string "Tỷ lệ"
+
+rls_string qtn_generatorsettings_item5_string "Viền"
+
+rls_string qtn_generatorsettings_item6_string "Định dạng"
+
+rls_string qtn_generatorsettings_item7_string "Màu nền"
+
+rls_string qtn_generatorsettings_item8_string "Màu mã"
+
+rls_string qtn_generator_msg1_string "Không thể tạo mã QR!"
+
+rls_string qtn_generator_msg2_string "Mã QR đã sẵn sàng!"
+
+rls_string qtn_generator_msg3_string "Đã lưu thành công!"
+
+rls_string qtn_generator_msg4_string "Đang lưu ảnh..."
+
+rls_string qtn_driveselection_title_string "Chọn ổ đĩa:"
+
+rls_string qtn_fileselection_title_string "Chọn file ảnh:"
+
+// strings for view title
+rls_string qtn_decoder_title_string "Giải mã"
+
+rls_string qtn_Scanner_title_string "Quét"
+
+rls_string qtn_history_title_string "Lịch sử"
+
+rls_string qtn_generator_title_string "Tạo mã"
+
+rls_string qtn_about_title_string "Giới thiệu"
+
+rls_string qtn_settings_title_string "Cài đặt"
+
+
+rls_string qtn_restart_dlg_string "Cần khởi động lại để áp dụng, thoát ngay?"
+
+rls_string qtn_inputtext_hint_string "nhập văn bản tại đây." 
+
+rls_string qtn_cba_menu_string "Menu" 
+rls_string qtn_cba_exit_string "Thoát" 
+rls_string qtn_cba_back_string "Trở về" 
+rls_string qtn_cba_yes_string "Có" 
+rls_string qtn_cba_no_string "Không" 
+
+rls_string qtn_loc_resource_file_1 "\\resource\\apps\\Squirrel"
+
+// End of File

@@ -128,6 +128,7 @@ void CSquirrelDecoderView::ActivatePrevViewL()
 	case EHistoryView:
 	case EScannerView:
 	    ActivateViewL(iPrevViewId);
+	    //AppUi()->ActivateLocalViewL(iPrevViewId.iViewUid);
 	    break;
 	default:
 	    // shows the main view
@@ -154,6 +155,7 @@ void CSquirrelDecoderView::DoActivateL( const TVwsViewId& aPrevViewId,
 
     if (aCustomMessageId == TUid::Uid(ECmdDecodeImageFile))
     {
+	iPrevViewId.iViewUid.iUid = EHistoryView;
 	TFileName fn;
 	fn.Copy((const TUint16*)aCustomMessage.Ptr(), aCustomMessage.Size()/2);
 	iDecoderModel->StartDecodeL(fn);
@@ -161,6 +163,7 @@ void CSquirrelDecoderView::DoActivateL( const TVwsViewId& aPrevViewId,
 
     else if (aCustomMessageId == TUid::Uid(ECmdDecodeBitmap))
     {
+	iPrevViewId.iViewUid.iUid = EScannerView;
 	iDecoderModel->StartDecodeL();
     }
 

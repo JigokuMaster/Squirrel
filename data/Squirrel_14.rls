@@ -27,6 +27,7 @@ rls_string qtn_mainview_subcmd2_string "Turkish"
 rls_string qtn_mainview_subcmd3_string "Belarussian"
 rls_string qtn_mainview_subcmd4_string "Polish"
 rls_string qtn_mainview_subcmd5_string "Vietnamese"
+rls_string qtn_mainview_subcmd6_string "Russian"
 
 // decoder menu strings
 rls_string qtn_datamenu_title1_string "Metin:"

@@ -67,6 +67,7 @@ private:
 public:
         TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
 
+	void LoadPageL();
 
 public: //data 
         // Pointer to the browser control interface

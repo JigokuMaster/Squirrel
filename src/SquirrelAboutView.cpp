@@ -65,6 +65,15 @@ void CWebView::ConstructL(const TRect& aRect)
 	NULL
     );
     //iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsSmallScreen, 1);
+    SetRect(aRect);
+    LoadPageL();
+    SetBlank();
+    ActivateL();
+}
+
+
+void CWebView::LoadPageL()
+{
     iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsTextWrapEnabled, 1);
 #ifdef __WINSCW__
     if (BaflUtils::FileExists(iEikonEnv->FsSession(), KHTMLFile))
@@ -86,9 +95,6 @@ void CWebView::ConstructL(const TRect& aRect)
    
 #endif
 
-    SetRect(aRect);
-    SetBlank();
-    ActivateL();
 }
 
 
@@ -232,8 +238,7 @@ void CSquirrelAboutView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
     if (!iContainer) iContainer = CWebView::NewL(ClientRect());
     iContainer->SetMopParent(this);
     AppUi()->AddToStackL(*this, iContainer); 
-    Cba()->MakeCommandVisible(EAknSoftkeyOptions, EFalse);
-   
+    Cba()->MakeCommandVisible(EAknSoftkeyOptions, EFalse);  
 }
 
 
@@ -242,6 +247,8 @@ void CSquirrelAboutView::DoDeactivate()
     if ( iContainer )
     {
 	AppUi()->RemoveFromViewStack(*this, iContainer);
+	delete iContainer;
+	iContainer = NULL;
     }  
 }
 

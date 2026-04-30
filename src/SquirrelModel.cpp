@@ -465,6 +465,7 @@ void CQRCEncoderModel::RedrawQRCImageL(TSize aSize)
     }
 }
 
+
 void CQRCEncoderModel::ShowInfoMessageL(TInt aResourceId, TInt aAlignment, TInt aXpos, TInt aYPos, TInt aShowTime)
 {
     if (!iInfoPopup)

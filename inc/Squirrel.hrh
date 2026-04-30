@@ -53,7 +53,8 @@ enum TSquirrelCmds
 	ECmdSelectLanguage14,
 	ECmdSelectLanguage40,
 	ECmdSelectLanguage27,
-	ECmdSelectLanguage96
+	ECmdSelectLanguage96,
+	ECmdSelectLanguage16
 
 };
 

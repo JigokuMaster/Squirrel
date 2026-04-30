@@ -148,6 +148,7 @@ class CTextEdit : public CEikRichTextEditor
 
 	void SetFontL(TFontSpec&);
 
+	//void SetSize(const TSize &aSize);
 
     private:
 
@@ -162,6 +163,8 @@ class CTextEdit : public CEikRichTextEditor
 	TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
 
 	void SizeChanged();
+
+
 
     private:
 

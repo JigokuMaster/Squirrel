@@ -445,6 +445,10 @@ TInt CSquirrelAppView::SelectedLanguageItemL()
 	case ELangVietnamese:
 	    item = ECmdSelectLanguage96;
 	    break;
+	case ELangRussian:
+	    item = ECmdSelectLanguage16;
+	    break;
+
 	default: break;
     }
     return item;
@@ -472,6 +476,10 @@ void CSquirrelAppView::ChangeLanguageL(TInt aCommand)
 	case ECmdSelectLanguage96:
 	    lang = ELangVietnamese;
 	    break;
+	case ECmdSelectLanguage16:
+	    lang = ELangRussian;
+	    break;
+
 	default: break;
     }
 

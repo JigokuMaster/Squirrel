@@ -15,10 +15,51 @@
 #include <eikimage.h>
 #include <imageconversion.h>
 #include <etel3rdparty.h>
+#include <eikrted.h>
+
 #include "uicommons.h"
 #include "SquirrelModel.h"
 
 // CLASS DECLARATION
+
+class CTextEditWrapper: public CCoeControl
+{
+    
+public:
+    // constructors and destructor
+
+    void ConstructL(const TRect& aRect, const CCoeControl* aParent);
+
+    ~CTextEditWrapper();
+
+public:
+    // new functions	
+    void SetSkinnedTextColorL();
+
+    void SetTextL(const TDesC *aDes);
+
+    HBufC*  GetTextL();
+
+    TBool IsEmpty();
+
+private:
+    // functions from CCoeControl
+
+    void SizeChanged();
+
+    TInt CountComponentControls() const;
+
+    CCoeControl* ComponentControl(TInt aIndex) const;
+
+    //void Draw(const TRect& aRect) const;
+
+    TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
+
+private:
+    CEikRichTextEditor* iRtEd; // Rich Text Editor
+};
+
+
 class CSquirrelGeneratorView : public CAknView
 {
 public:
@@ -98,7 +139,8 @@ private:
 	CViewContainer *iContainer;
 	CEikImage *iImageView;
 	CQRCEncoderModel *iEncoderModel;
-	CTextEdit *iTextEdit;
+	//CEikRichTextEditor *iTextEdit;
+	CTextEditWrapper *iTextEdit;
 	CTelephony* iTelephony;
 	TBool iFullScreenMode;
 
