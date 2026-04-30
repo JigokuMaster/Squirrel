@@ -98,7 +98,7 @@ LIBRARY		   browserengine.lib
 LIBRARY            libc.lib libm.lib
 STATICLIBRARY 	   libzbar.lib
 
-LANG SC 01 14 40 27 96
+LANG SC 01 14 40 27 96 16
 
 VENDORID	0
 SECUREID	0xcdbe9aa7

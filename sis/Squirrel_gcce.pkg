@@ -36,6 +36,7 @@
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r40"		-"!:\resource\apps\Squirrel.r40"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r27"		-"!:\resource\apps\Squirrel.r27"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r96"		-"!:\resource\apps\Squirrel.r96"
+"$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.r16"		-"!:\resource\apps\Squirrel.r16"
 "$(EPOCROOT)epoc32\data\z\private\10003a3f\apps\Squirrel_reg.rsc"	-"!:\private\10003a3f\import\apps\Squirrel_reg.rsc"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel.mif" -"!:\resource\apps\Squirrel.mif"
 "$(EPOCROOT)epoc32\data\z\resource\apps\Squirrel_ui.mif" -"!:\resource\apps\Squirrel_ui.mif"

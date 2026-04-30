@@ -1,5 +1,6 @@
 Squirrel is a simple application to create and scan QR codes.
-The scanner is powered by the ZBar library supporting bar codes as well as various QR code types like those with rounded corners style.
+
+The scanner is powered by the ZBar library supporting bar codes as well as various QR code types like those with rounded corners.
 
 # Supported platforms
 
