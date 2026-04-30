@@ -392,7 +392,7 @@ RESOURCE MENU_PANE r_language_submenu
 	MENU_ITEM { command=ECmdSelectLanguage14; txt=qtn_mainview_subcmd2_string; flags=EEikMenuItemRadioMiddle;},
 	MENU_ITEM { command=ECmdSelectLanguage40; txt=qtn_mainview_subcmd3_string; flags=EEikMenuItemRadioMiddle;},
 	MENU_ITEM { command=ECmdSelectLanguage27; txt=qtn_mainview_subcmd4_string; flags=EEikMenuItemRadioMiddle;},
-	MENU_ITEM { command=ECmdSelectLanguage27; txt=qtn_mainview_subcmd5_string; flags=EEikMenuItemRadioMiddle;},
+	MENU_ITEM { command=ECmdSelectLanguage96; txt=qtn_mainview_subcmd5_string; flags=EEikMenuItemRadioMiddle;},
 	MENU_ITEM { command=ECmdSelectLanguage16; txt=qtn_mainview_subcmd6_string; flags=EEikMenuItemRadioEnd; }
     };
 }

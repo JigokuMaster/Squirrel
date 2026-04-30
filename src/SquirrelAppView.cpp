@@ -321,6 +321,7 @@ void CSquirrelAppView::HandleCommandL( TInt aCommand )
 	case ECmdSelectLanguage27:
 	case ECmdSelectLanguage40:
 	case ECmdSelectLanguage96:
+	case ECmdSelectLanguage16:
 	    ChangeLanguageL(aCommand);
 	    break;
 	default:
@@ -364,6 +365,7 @@ void CSquirrelAppView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 	iListbox->ConstructL(NULL, ClientRect(), R_MAINVIEW_LISTBOX);
 	CArrayPtr<CGulIcon>* iconArray = new (ELeave) CAknIconArray(KNumberOfItems);
 	iListbox->Listbox()->ItemDrawer()->ColumnData()->SetIconArray(iconArray);
+	iListbox->Listbox()->ItemDrawer()->ColumnData()->EnableMarqueeL(ETrue);
 	CEikScrollBarFrame* frame = iListbox->Listbox()->ScrollBarFrame();
 	if (frame) TRAP_IGNORE(frame->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff,CEikScrollBarFrame::EAuto));
 
@@ -458,6 +460,7 @@ TInt CSquirrelAppView::SelectedLanguageItemL()
 
 void CSquirrelAppView::ChangeLanguageL(TInt aCommand)
 {
+
     TLanguage lang = ELangTest;
     switch (aCommand)
     {
@@ -480,12 +483,13 @@ void CSquirrelAppView::ChangeLanguageL(TInt aCommand)
 	    lang = ELangRussian;
 	    break;
 
-	default: break;
+	default:
+	    break;
     }
 
     if (lang)
     {
-	
+
 	CEikAppUi* appui = reinterpret_cast<CEikAppUi*>(iEikonEnv->AppUi());
 	CSquirrelDocument* doc = static_cast<CSquirrelDocument*>(appui->Document());
 	TBool ok = static_cast<CSquirrelApplication*>(doc->Application())->SaveLanguageL(lang);

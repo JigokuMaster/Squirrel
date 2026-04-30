@@ -55,7 +55,6 @@ enum TSquirrelCmds
 	ECmdSelectLanguage27,
 	ECmdSelectLanguage96,
 	ECmdSelectLanguage16
-
 };
 
 // Dialog item Ids
