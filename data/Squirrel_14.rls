@@ -21,13 +21,13 @@ rls_string qtn_mainview_item4_string "3\tGeçmiş"
 rls_string qtn_mainview_item5_string "4\tHakkında"
 
 
-rls_string qtn_mainview_cmd1_string "Language"
-rls_string qtn_mainview_subcmd1_string "English"
-rls_string qtn_mainview_subcmd2_string "Turkish"
-rls_string qtn_mainview_subcmd3_string "Belarussian"
-rls_string qtn_mainview_subcmd4_string "Polish"
-rls_string qtn_mainview_subcmd5_string "Vietnamese"
-rls_string qtn_mainview_subcmd6_string "Russian"
+rls_string qtn_mainview_cmd1_string "Dil"
+rls_string qtn_mainview_subcmd1_string "İngilizce"
+rls_string qtn_mainview_subcmd2_string "Türkçe"
+rls_string qtn_mainview_subcmd3_string "Belarusça"
+rls_string qtn_mainview_subcmd4_string "Polonyaca"
+rls_string qtn_mainview_subcmd5_string "Vietnamca"
+rls_string qtn_mainview_subcmd6_string "Rusça"
 
 // decoder menu strings
 rls_string qtn_datamenu_title1_string "Metin:"
@@ -84,14 +84,14 @@ rls_string qtn_about_title_string "Hakkında"
 rls_string qtn_settings_title_string "Ayarlar"
 
 
-rls_string qtn_restart_dlg_string "Restart is required to apply the change, Exit now?"
+rls_string qtn_restart_dlg_string "Değişikliği uygulamak için yeniden başlatma gerekli, Çıkılsın mı?"
 
-rls_string qtn_inputtext_hint_string "input text here." 
-rls_string qtn_cba_menu_string "Menu" 
-rls_string qtn_cba_exit_string "Exit" 
-rls_string qtn_cba_back_string "Back" 
-rls_string qtn_cba_yes_string "Yes" 
-rls_string qtn_cba_no_string "No" 
+rls_string qtn_inputtext_hint_string "buraya yazın..." 
+rls_string qtn_cba_menu_string "Menü" 
+rls_string qtn_cba_exit_string "Çıkış" 
+rls_string qtn_cba_back_string "Geri" 
+rls_string qtn_cba_yes_string "Evet" 
+rls_string qtn_cba_no_string "Hayır" 
 
 rls_string qtn_loc_resource_file_1 "\\resource\\apps\\Squirrel"
 
