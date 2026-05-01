@@ -19,6 +19,7 @@
 #include "SquirrelModel.h"
 
 _LIT(KLangSetFileName, "Language.dat");
+_LIT(KEngResFileNameFormat, "%S:\\Resource\\Apps\\Squirrel.rsc");
 _LIT(KResFileNameFormat0, "%S:\\Resource\\Apps\\Squirrel.r0%d");
 _LIT(KResFileNameFormat, "%S:\\Resource\\Apps\\Squirrel.r%d");
 
@@ -79,7 +80,11 @@ TBool CSquirrelApplication::ReadLanguageL(TFileName &aFileName) const
 	{
 	    TPtrC driveChar = AppFullName().Left(1);
 	    if (iCurrentLanguage > 9) aFileName.Format(KResFileNameFormat, &driveChar, iCurrentLanguage);
-	    else aFileName.Format(KResFileNameFormat0, &driveChar, iCurrentLanguage);
+	    else 
+	    {
+		if (iCurrentLanguage == ELangEnglish) aFileName.Format(KEngResFileNameFormat, &driveChar);
+		else aFileName.Format(KResFileNameFormat0, &driveChar, iCurrentLanguage);
+	    }
 	    return ETrue;
 	}
     }
@@ -96,9 +101,13 @@ TBool CSquirrelApplication::SaveLanguageL(const TLanguage aLanguage)
 
     TPtrC driveChar = AppFullName().Left(1);
     if (aLanguage > 9) res.Format(KResFileNameFormat, &driveChar, aLanguage);
-    else res.Format(KResFileNameFormat0, &driveChar, aLanguage);
 
-    if (!BaflUtils::FileExists(CCoeEnv::Static()->FsSession(), res) && aLanguage!= ELangEnglish) return EFalse;
+    else{
+	if (aLanguage == ELangEnglish) res.Format(KEngResFileNameFormat, &driveChar);
+	else res.Format(KResFileNameFormat0, &driveChar, aLanguage);
+    }
+
+    if (!BaflUtils::FileExists(CCoeEnv::Static()->FsSession(), res)) return EFalse;
 
     TFileName storePath;
     GetPrivateFilePathL(fs, storePath, KLangSetFileName);
