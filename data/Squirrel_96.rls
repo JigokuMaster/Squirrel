@@ -27,7 +27,7 @@ rls_string qtn_mainview_subcmd2_string "Tiếng Thổ Nhĩ Kỳ"
 rls_string qtn_mainview_subcmd3_string "Tiếng Belarus"
 rls_string qtn_mainview_subcmd4_string "Tiếng Ba Lan"
 rls_string qtn_mainview_subcmd5_string "Tiếng Việt"
-rls_string qtn_mainview_subcmd6_string "Russian"
+rls_string qtn_mainview_subcmd6_string "Tiếng Nga"
 
 // decoder menu strings
 

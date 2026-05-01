@@ -25,7 +25,7 @@ P.I.P.S v1.7 for S60v3 and S60v5
 
 # Contributors
 * Icons by Mert Çakır
-* Turkish translation by symbuzzer
+* Turkish translation by Symbuzzer
 * Belarussian translation by fedor4ever
 * Polish translation by WunderWungiel
 * Vietnamese translation by Lee Nguyen

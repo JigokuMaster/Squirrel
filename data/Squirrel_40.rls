@@ -35,7 +35,7 @@ rls_string qtn_mainview_subcmd4_string "Польская"
 // Vietnamese
 rls_string qtn_mainview_subcmd5_string "В'етнамская"
 // Russian
-rls_string qtn_mainview_subcmd6_string "Russian"
+rls_string qtn_mainview_subcmd6_string "рускі"
 
 // decoder menu strings
 
