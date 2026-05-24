@@ -95,6 +95,7 @@ LIBRARY            etel3rdparty.lib esock.lib insock.lib
 LIBRARY 	   vcard.lib versit.lib
 LIBRARY		   browserengine.lib
 //LIBRARY 	   BrowserLauncher.lib
+LIBRARY		   featdiscovery.lib
 LIBRARY            libc.lib libm.lib
 STATICLIBRARY 	   libzbar.lib
 

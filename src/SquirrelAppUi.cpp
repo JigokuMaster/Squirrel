@@ -126,18 +126,11 @@ void CSquirrelAppUi::HandleWsEventL(const TWsEvent& aEvent, CCoeControl* aDestin
 	    case EKeyYes:
 		if (IsViewActivated(iGeneratorView))
 		{
-		    iGeneratorView->HandleCommandL(ECmdSendImage);
+		    iGeneratorView->ToggleFullScreenMode();
 		}
 		else if (IsViewActivated(iDecoderView))
 		{
 		    iDecoderView->HandleCommandL(ECmdSendPayload);
-		}
-		break;
-	    case 'f':
-	    case '4':
-		if (IsViewActivated(iGeneratorView))
-		{
-		    iGeneratorView->ToggleFullScreenMode();
 		}
 		break;
 	    default:

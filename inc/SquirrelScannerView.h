@@ -51,6 +51,7 @@ private:
         void CreateBackBufferL();
         void ReleaseBackBuffer();
 	void ShowError();
+	void UpdateStatus();
 	void FindCode(CFbsBitmap* aBitmap);
 
  
@@ -81,7 +82,11 @@ private:
 	ScanHelper iScanHelper;
 	TBool iFoundCode;
 	TBool iViewFinderActivated;
-	CPeriodic*  iPeriodic;
+	//CPeriodic*  iPeriodic;
+	TBuf<256> iStatusBuf;
+	TInt64 iLastStatusUpdate;
+	TInt iStatusCounter;
+
 public:
 	TBool iDoFindCode;
 };

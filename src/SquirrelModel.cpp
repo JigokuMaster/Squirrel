@@ -59,9 +59,8 @@ static void CopyTextToClipboardL(const TDesC &aText)
 static void ViewTextWithNotePadL(const TDesC &aText, const TBool &aSaveContent=EFalse)
 {
     TInt ret;
-    HBufC* content;
-    
-    content = CNotepadApi::ExecTextEditorL(ret, aText);
+
+    HBufC* content = CNotepadApi::ExecTextEditorL(ret, aText);
     if( (ret == KErrNone) && aSaveContent)
     {
 	CNotepadApi::AddContentL(content->Des());
@@ -273,18 +272,15 @@ CFbsBitmap* CQRCEncoderModel::FullBitmap()
     return iCachedBitmapDrawer->Bitmap();
 }
 
-
-void CQRCEncoderModel::EncodeL(const TDesC8 &aText)
+#include <string.h>
+void CQRCEncoderModel::EncodeL(TDes8 &aText)
 {
 
     iState = EEncodingText;
 
     //const char* utf8TextPtr = reinterpret_cast<const char*>(aText.PtrZ());
-
     const char* utf8TextPtr = reinterpret_cast<const char*>(aText.Ptr());
-
     TInt qrcSize = iEncoder.EncodeText(utf8TextPtr);
-
     if (qrcSize > 0)
     {
 	DrawQRCImageL(qrcSize);
@@ -306,7 +302,7 @@ void CQRCEncoderModel::EncodeL(const TDesC16 &aText)
 {
     if (iUtf8Text) delete iUtf8Text;
     
-    iUtf8Text = HBufC8::New(aText.Size());
+    iUtf8Text = HBufC8::New(aText.Size()+1);
     if (!iUtf8Text)
     {
 	iBitmapDrawer->ClearL(KRgbRed);
@@ -315,8 +311,8 @@ void CQRCEncoderModel::EncodeL(const TDesC16 &aText)
     }
 
     TPtr8 p = iUtf8Text->Des();
-    TInt err = CnvUtfConverter::ConvertFromUnicodeToUtf8(p/*iUtf8Text->Des()*/, aText);
-
+    p.FillZ();
+    TInt err = CnvUtfConverter::ConvertFromUnicodeToUtf8(p, aText);
     if (err != KErrNone)
     {
 	ShowErrorL(err);

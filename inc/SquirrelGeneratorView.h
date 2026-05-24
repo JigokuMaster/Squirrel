@@ -36,9 +36,13 @@ public:
     // new functions	
     void SetSkinnedTextColorL();
 
+    void ClearL();
+
     void SetTextL(const TDesC *aDes);
 
-    HBufC*  GetTextL();
+    TPtrC GetText();
+
+    HBufC* GetTextL();
 
     TBool IsEmpty();
 
@@ -143,6 +147,8 @@ private:
 	CTextEditWrapper *iTextEdit;
 	CTelephony* iTelephony;
 	TBool iFullScreenMode;
+	TBool iHideWIFIMenuItem;
+
 
 };
 

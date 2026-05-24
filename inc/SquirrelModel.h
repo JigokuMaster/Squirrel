@@ -61,7 +61,7 @@ public:
 	void RedrawQRCImageL(TSize aSize);
 	CFbsBitmap* Bitmap();
 	CFbsBitmap* FullBitmap();
-	void EncodeL(const TDesC8 &aText);
+	void EncodeL(TDes8 &aText);
 	void EncodeL(const TDesC16 &aText);
 	void SaveImageL(TFileName &aFilePath);
 	void SendImageL();

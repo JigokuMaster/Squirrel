@@ -360,7 +360,9 @@ TPtr8 CContactSelectionDlg::GetVCardL(const TInt aIndex)
     idArray->AddL((*contacts)[aIndex]);
 	
     if (!iVCardsBuf) iVCardsBuf = CBufFlat::NewL(4);
+    
     else iVCardsBuf->Reset();
+    
 
     RBufWriteStream outputStream(*iVCardsBuf);
     CleanupClosePushL(outputStream);
@@ -378,7 +380,17 @@ TPtr8 CContactSelectionDlg::GetVCardL(const TInt aIndex)
 
     // discard photo field
     if ( hasPhoto) DiscardPhotoFieldL(iVCardsBuf);
-    return iVCardsBuf->Ptr(0);
+
+    // cleanup extra junks and make sure the data is NULL-terminated.
+    _LIT8(KVCEnd, "END:VCARD");
+    TPtr8 p = iVCardsBuf->Ptr(0);
+    TInt len = p.Length();
+    TInt pos = p.FindF(KVCEnd);
+    TInt endPos = pos + 10;
+    if (pos != KErrNotFound && len >= endPos) endPos--;
+    else endPos = --len;
+    p[endPos] = '\0';
+    return p;
 }
 
 

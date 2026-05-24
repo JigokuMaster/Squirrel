@@ -338,10 +338,12 @@ int QRBARDecoder::ExtractCode(void* data, int w, int h, DecoderResult* res)
 
 	res->payload_len = text_len;
 	res->payload = text;
+	
+	#if 0
 	if (res->has_qrcode)
 	{
 	    // TODO: check for valid UTF-8?
-	    if ( (text_len != bin_len) && HasNonPrintableChar(bin, bin_len) )
+	    if ( (text_len != bin_len) /*&& HasNonPrintableChar(bin, bin_len)*/ )
 	    {
 		res->payload_type = PL_BINARY;
 		res->payload = bin;
@@ -349,6 +351,7 @@ int QRBARDecoder::ExtractCode(void* data, int w, int h, DecoderResult* res)
 	    }
 
 	}
+	#endif
 
     }
 
@@ -472,7 +475,7 @@ int QRBARDecoder::ConvertPayloadData(const char *inEnc, const char *outEnc, char
 #define MATCH_PREFIX2(s1, s2, l) (strncasecmp(s1, s2, l) == 0)
 
 // s1 must must be longer than s2 (suffix)
-#define MATCH_SUFFIX(s1, s2, l) (strncmp((s1) + (l - strlen(s2)), s2, strlen(s2)) == 0)
+#define MATCH_SUFFIX(s1, s2, l) (strncmp((s1) + (strlen(s1) - l), s2, l) == 0)
 
 struct PLTypeCheck {
     const char* prefix;

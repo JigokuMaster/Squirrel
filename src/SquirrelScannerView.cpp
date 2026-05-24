@@ -44,6 +44,7 @@ static TInt CopyBitmap(CFbsBitmap* aFrame, CFbsBitmap* &aFrameCopy)
 
 // implementation of CCamScanView
 
+
 CCamScanView* CCamScanView::NewL(const TRect& aRect, const CCoeControl* aParent)
 {
     CCamScanView* self = CCamScanView::NewLC(aRect, aParent);
@@ -53,7 +54,7 @@ CCamScanView* CCamScanView::NewL(const TRect& aRect, const CCoeControl* aParent)
 
 CCamScanView* CCamScanView::NewLC(const TRect& aRect,const CCoeControl* aParent)
 {
-    CCamScanView* self = new (ELeave) CCamScanView;
+    CCamScanView* self = new (ELeave) CCamScanView();
     CleanupStack::PushL(self);
     self->ConstructL(aRect, aParent);
     return self;
@@ -62,9 +63,9 @@ CCamScanView* CCamScanView::NewLC(const TRect& aRect,const CCoeControl* aParent)
 void CCamScanView::ConstructL(const TRect& aRect ,const CCoeControl* aParent)
 {
 
-    const TInt KTimerInterval(3*1000000); // 3 seconds
-    iPeriodic = CPeriodic::NewL(CActive::EPriorityIdle);
-    iPeriodic->Start(KTimerInterval, KTimerInterval, TCallBack(CCamScanView::TimerCallBack, this));
+    //const TInt KTimerInterval(3*1000000); // 3 seconds
+    //iPeriodic = CPeriodic::NewL(CActive::EPriorityIdle);
+    //iPeriodic->Start(KTimerInterval, KTimerInterval, TCallBack(CCamScanView::TimerCallBack, this));
 
     iViewFinderSize = aRect.Size();
     if (aParent) CreateWindowL(aParent);
@@ -86,12 +87,14 @@ CCamScanView::CCamScanView()
     iFoundCode = EFalse;
     iDoFindCode = EFalse;
     iViewFinderActivated = EFalse;
+    //iLastStatusUpdate.HomeTime();
+    iLastStatusUpdate = 0;
+    iStatusCounter = 0;
 }
 
 CCamScanView::~CCamScanView()
 {
-    delete iPeriodic;
-
+    //delete iPeriodic;
     CleanupCamera();
 }
 
@@ -189,7 +192,8 @@ void CCamScanView::StopViewFinder()
 	iCamera->PowerOff();                   
 	iCamera->Release();
     }
-    iViewFinderActivated = EFalse; 
+    iViewFinderActivated = EFalse;
+    iDoFindCode = EFalse;
 }
 
 void CCamScanView::Draw(const TRect& aRect) const
@@ -286,12 +290,76 @@ void CCamScanView::ShowError()
     }
 }
 
+
+void CCamScanView::UpdateStatus()
+{
+
+    TInt sec;
+    TTimeIntervalSeconds secInterval;
+    TTime currentTime;
+
+    currentTime.HomeTime();
+    if (currentTime.SecondsFrom(TTime(iLastStatusUpdate), secInterval) != KErrNone)
+    {
+	sec = 0;
+    }
+    else 
+    {
+	sec = secInterval.Int();
+    }
+
+    if ( iLastStatusUpdate == 0 ) iLastStatusUpdate = currentTime.Int64();
+
+    if ( sec < 1 ) return; 
+    
+    //if ( sec > 1 ) iStatusCounter = Min(3, sec);
+
+    // keep the screen light on.
+    User::ResetInactivityTime();
+
+    iLastStatusUpdate = currentTime.Int64();
+ 
+    if ( iStatusCounter == 3 )
+    {
+	iDoFindCode = !iDoFindCode;
+	iStatusCounter = 0;
+    }
+
+    if ( iStatusCounter == 0 ) 
+    {
+	iStatusBuf.Zero();
+	TRAP(iError, CCoeEnv::Static()->ReadResourceL(iStatusBuf, R_SCANNER_TITLE));
+	if (iError != KErrNone)
+	{
+	    StopViewFinder();
+	    ShowError();
+	    return;
+	}
+
+    }
+
+    if ( iStatusCounter < 3 )
+    {
+	if ( iDoFindCode ) iStatusBuf.Append(_L("."));
+	iStatusCounter++;
+    }
+    
+
+    TRAP(iError, SetAppTitleL(&iStatusBuf));
+    if (iError != KErrNone)
+    {
+	StopViewFinder();
+	ShowError();
+    }
+}
+
+
 void CCamScanView::FindCode(CFbsBitmap* aBitmap)
 {
-    iDoFindCode = EFalse; // reset
     TInt ret = iScanHelper.FindCode(aBitmap);
     if (ret == -1)
     {
+	iDoFindCode = EFalse; // reset
 	// memory error probably ...
 	const TUint16* error = iScanHelper.GetError();
 	if (error)
@@ -305,7 +373,7 @@ void CCamScanView::FindCode(CFbsBitmap* aBitmap)
     iFoundCode = (ret > 0);
     if (iFoundCode)
     {
-
+	iDoFindCode = EFalse;
 	CFbsBitmap* bitmapCopy = NULL;
 	iError = CopyBitmap(aBitmap, bitmapCopy);
 	if (iError == KErrNone)
@@ -320,7 +388,7 @@ void CCamScanView::FindCode(CFbsBitmap* aBitmap)
 TInt CCamScanView::TimerCallBack(TAny* aInstance)
 {
     CCamScanView* scanner = (CCamScanView*)aInstance;
-    scanner->iDoFindCode = ETrue;
+    //scanner->iDoFindCode = ETrue;
     // keep the screen light on.
     User::ResetInactivityTime();
     return 0;
@@ -372,8 +440,11 @@ void CCamScanView::ViewFinderFrameReady(CFbsBitmap& aFrame)
 
         // Copy received viewfinder picture to back buffer
         iBackBufferContext->BitBlt( pos, &aFrame, TRect(TPoint( 0, 0 ), bmpSizeInPixels ));
+	
+	UpdateStatus();
+	
+	if ( iDoFindCode ) FindCode(&aFrame);
 
-	if (iDoFindCode) FindCode(&aFrame);
         // Update backbuffer into screen 
         DrawNow();	
 

@@ -14,6 +14,8 @@ Description : Application view implementation
 #include <es_enum.h>
 #include <in_sock.h>
 #include <caknfileselectiondialog.h>
+#include <featdiscovery.h> 
+#include <featureinfo.h>
 #include "SquirrelAppUi.h"
 #include "SquirrelGeneratorView.h"
 #include "SquirrelDlgs.h"
@@ -127,12 +129,13 @@ TKeyResponse CTextEditWrapper::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEvent
     {
 	if ( aKeyEvent.iCode == EKeyDevice3 )
 	{
+	
 	    TInt pos = iRtEd->CursorPos();
 	    iRtEd->RichText()->InsertL(pos , CEditableText::ELineBreak);
 	    iRtEd->HandleTextChangedL();
 	    iRtEd->SetCursorPosL(++pos, EFalse);
 	}
-	else return iRtEd->OfferKeyEventL(aKeyEvent, aType);	
+	return iRtEd->OfferKeyEventL(aKeyEvent, aType);	
     }
     return EKeyWasNotConsumed;
 }
@@ -151,9 +154,24 @@ void CTextEditWrapper::SetSkinnedTextColorL()
     iRtEd->ApplyCharFormatL(charFormat, charFormatMask); // crash if the editor is empty...
 }
 
+void CTextEditWrapper::ClearL()
+{
+    if ( iRtEd )
+    {
+	iRtEd->RichText()->Reset();
+	iRtEd->HandleTextChangedL();
+	iRtEd->SetCursorPosL(0, EFalse);
+    }
+}
+
+
 void CTextEditWrapper::SetTextL(const TDesC *aDes)
 {
-    if ( iRtEd ) iRtEd->SetTextL(aDes);
+    if ( iRtEd ){
+	ClearL();
+	iRtEd->SetTextL(aDes);
+	SetSkinnedTextColorL();
+    }
 }
 
 #if 0
@@ -161,7 +179,7 @@ TPtrC CTextEditWrapper::GetText()
 {
 
     TInt len = iRtEd->RichText()->DocumentLength();
-    TPtrC p = iRtEd->Text()->Read(0).Left(len);
+    TPtrC p = iRtEd->RichText()->Read(0).Left(len);
     TUint16* tp = (TUint16*)p.Ptr();
     while (len--)
     {
@@ -182,10 +200,9 @@ HBufC* CTextEditWrapper::GetTextL()
     TUint16* tp = (TUint16*)p.Ptr();
     while (len--)
     {
-	if (*tp == 0x2029) *tp = '\n';
+	if (*tp == 0x2029 || *tp == 0x2028) *tp = '\n';
 	++tp;
     }
-    //*buf = p;
     return buf;
 }
 
@@ -217,6 +234,9 @@ CSquirrelGeneratorView::CSquirrelGeneratorView()
     iTextEdit = NULL;
     iTelephony = NULL;
     iFullScreenMode = EFalse;
+    iHideWIFIMenuItem = EFalse;
+    TRAP_IGNORE(iHideWIFIMenuItem = !CFeatureDiscovery::IsFeatureSupportedL(KFeatureIdProtocolWlan));
+    
 }
 
 // -----------------------------------------------------------------------------
@@ -265,6 +285,7 @@ CSquirrelGeneratorView* CSquirrelGeneratorView::NewLC()
 void CSquirrelGeneratorView::ConstructL()
 {
     BaseConstructL(R_GENERATOR_VIEW);
+
 }
 
 
@@ -290,7 +311,6 @@ void CSquirrelGeneratorView::SetupControlsL()
     HBufC* prompt = iCoeEnv->AllocReadResourceLC(R_EDITOR_PROMPT); 
     iTextEdit->SetTextL(prompt);
     CleanupStack::PopAndDestroy(prompt);
-    iTextEdit->SetSkinnedTextColorL();
     iContainer->AddControlL(iTextEdit);
     
     LayoutControls();
@@ -336,9 +356,12 @@ void CSquirrelGeneratorView::ToggleFullScreenMode()
 	    iFullScreenMode = EFalse;
 	    return;
 	}
+
+	iImageView->SetFocus(ETrue);
 	iImageView->SetExtentToWholeScreen();
 	iTextEdit->SetRect(TRect(0,0,0,0));
-	iTextEdit->SetFocus(EFalse, EDrawNow);
+	iTextEdit->SetFocus(EFalse);
+	//iTextEdit->MakeVisible(EFalse);
 
     }
 
@@ -357,11 +380,14 @@ void CSquirrelGeneratorView::ToggleFullScreenMode()
 
 void CSquirrelGeneratorView::DoGenerateL()
 {
+   
     HBufC* textBuf = iTextEdit->GetTextL();
     CleanupStack::PushL(textBuf);
     iEncoderModel->EncodeL(*textBuf);
     CleanupStack::PopAndDestroy(textBuf);
+    //iEncoderModel->EncodeL(iTextEdit->GetText());
     iContainer->UpdateControl(0, EFalse);
+
 }
 
 
@@ -470,8 +496,10 @@ void CSquirrelGeneratorView::DoGenerateFromTemplateL(const TInt aCmd)
 	{
 	    CContactSelectionDlg* sel = CContactSelectionDlg::NewL();
 	    TInt index = sel->ShowL();
-	    if (index >= 0){
-		iEncoderModel->EncodeL(sel->GetVCardL(index));	
+	    if (index >= 0)
+	    {
+		TPtr8 tp = sel->GetVCardL(index);
+		iEncoderModel->EncodeL(tp);	
 	    }
 	    CleanupStack::PopAndDestroy(sel);
 	    break;
@@ -583,6 +611,7 @@ void CSquirrelGeneratorView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
     if (_fullScreenMode)
     {
 	iEncoderModel->RedrawQRCImageL(iImageView->Size());
+	iContainer->UpdateControl(0, EFalse);
     }
 
     AppUi()->AddToStackL(*this, iContainer); 
@@ -590,7 +619,7 @@ void CSquirrelGeneratorView::DoActivateL( const TVwsViewId& /*aPrevViewId*/,
 
 void CSquirrelGeneratorView::DoDeactivate()
 {
- 
+
     if (iContainer)
     {
 	AppUi()->RemoveFromStack(iContainer);
@@ -602,12 +631,15 @@ void CSquirrelGeneratorView::DoDeactivate()
 
 void CSquirrelGeneratorView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane *aMenuPane)
 {
-    if (!iTextEdit || !iEncoderModel || aResourceId != R_GENERATORVIEW_MENU) return;
+    if ( aResourceId == R_GENERATORVIEW_TEMPLATES_MENU ) aMenuPane->SetItemDimmed(ECmdSelectIP, iHideWIFIMenuItem);
 
+    if (!iTextEdit || !iEncoderModel || aResourceId != R_GENERATORVIEW_MENU) return;
+    
     TBool dimm = iTextEdit->IsEmpty() || !iEncoderModel->Finished();
     aMenuPane->SetItemDimmed(ECmdGenerateImage, dimm);
     dimm = !iEncoderModel->ImageReady();
     aMenuPane->SetItemDimmed(ECmdExport, dimm);
+    
 }
 
 
