@@ -62,7 +62,14 @@ static void Bin2HexWStr(const uint8_t *bin, size_t binLen, const wchar_t *outBuf
 	TPtr16 p((TUint16*)outBuf, outLen/2);
 	for(int i=0 ; i < binLen; i++)
 	{
-	    p.AppendFormat(KHex, bin[i]);
+	    uint8_t c = bin[i];
+	    if (isprint(c) || isspace(c)) 
+	    {
+		p.Append(c); 		    
+	    }
+	    else {
+		p.AppendFormat(KHex, c);
+	    }
 	}
 	p.ZeroTerminate();
     }
