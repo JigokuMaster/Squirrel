@@ -1,0 +1,45 @@
+Squirrel for Symbian S60v3, S60v5, S^3.
+
+verison 1.0.0
+
+# Features
+
+* Generate QR code from text, contact, notes, WIFI IP
+* Generate QR code with custom version,  colors ...etc
+* Send/Save QR code image.
+* Decode QR code or barcode from image file.
+* Scan directly using camera.
+* View/Copy/Send payload.
+* Turkish language - Thanks to symbuzzer.
+
+==================================================
+
+version 1.1.4 
+
+# Added:
+* Languages Menu.
+* Belarusian language - Thanks to fedor4ever.
+* Polish language - Thanks to WunderWungiel.
+* Vietnamese language - Thanks to Lee Nguyen.
+* Russian language - Thanks to  Computershik. 
+
+# Fixes & small Improvements:
+* The scanner now uses a 3-second timer to reduce heavy processing.
+* Re-designed about window.
+* Fixed Swipe issue (Thanks to fedor4ever for reporting and testing)
+* Added shortcut keys:
+- press green-key to share generated/decoded content.
+- press 4-key to enlarge the generated QR code image.
+
+
+==================================================
+
+version 1.1.6 
+
+* BugFix: the generator non longer adds junk data at end of vcard/contact payload 
+
+* Some UX improvements:
+- scanner's titlebar now has a simple progress indicator.
+- pressing GREEN KEY shows the created QR code in fullscreen.
+- IP address menu-item now is hidden on devices that don't have WIFI.
+- use hex escape sequence (\x00) when viewing QR code that contains binary data.
