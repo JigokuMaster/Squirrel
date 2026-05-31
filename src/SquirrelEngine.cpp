@@ -508,7 +508,7 @@ void QRBARDecoder::ParsePayloadType(DecoderResult  *qrc)
 	URL_TC("ftp://"),
 	URL_TC("ftps://"),
 	URL_TC("file://"),
-	{"BEGIN:VCALENDAR", NULL/*"END:VCALENDAR"*/, PL_CALENDAR},
+	{"BEGIN:VCALENDAR", "END:VCALENDAR", PL_CALENDAR},
 	{"mailto:", NULL, PL_EMAIL},
 	{"tel:", NULL, PL_PHONE_NUMBER},
 	{"geo:", NULL, PL_GEO_LOCATION},

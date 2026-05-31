@@ -853,6 +853,7 @@ void CDecoderModel::SendPayloadL()
 
 	case PL_CONTACT:
 	    fp.Append(_L(".vcf"));
+	    break;
 
 	case PL_CALENDAR:
 	    fp.Append(_L(".vcs"));
